@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.data.local
+package com.bloodspy.calendar.data.local.event
 
 import androidx.room.Query
 import androidx.room.Upsert

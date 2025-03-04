@@ -2,8 +2,8 @@ package com.bloodspy.calendar.data
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.bloodspy.calendar.data.local.EventLocal
-import com.bloodspy.calendar.domain.Event
+import com.bloodspy.calendar.data.local.event.EventLocal
+import com.bloodspy.calendar.domain.event.Event
 
 fun Event.toLocal() = EventLocal(
     id = this.id,

@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.domain
+package com.bloodspy.calendar.domain.event
 
 import kotlinx.coroutines.flow.Flow
 

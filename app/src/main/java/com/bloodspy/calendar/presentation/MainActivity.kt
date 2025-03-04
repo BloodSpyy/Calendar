@@ -1,4 +1,4 @@
-package com.bloodspy.calendar
+package com.bloodspy.calendar.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.bloodspy.calendar.ui.theme.CalendarTheme
+import com.bloodspy.calendar.theme.CalendarTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.domain
+package com.bloodspy.calendar.domain.event
 
 import androidx.compose.ui.graphics.Color
 
