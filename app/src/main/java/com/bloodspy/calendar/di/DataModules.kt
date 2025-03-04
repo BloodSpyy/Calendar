@@ -37,4 +37,8 @@ object DataModule {
     @Singleton
     @Provides
     fun provideEventDao(database: CalendarDatabase) = database.eventDao()
+
+    @Singleton
+    @Provides
+    fun provideRelationshipDao(database: CalendarDatabase) = database.relationshipDao()
 }

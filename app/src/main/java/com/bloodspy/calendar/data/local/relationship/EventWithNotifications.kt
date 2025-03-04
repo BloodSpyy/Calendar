@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.data.local.eventWithNotification
+package com.bloodspy.calendar.data.local.relationship
 
 import androidx.room.Embedded
 import androidx.room.Relation
