@@ -1,9 +1,9 @@
-package com.bloodspy.calendar.domain.products
+package com.bloodspy.calendar.domain
 
 import androidx.compose.ui.graphics.Color
 
-data class EventProduct(
-    val id: Int,
+data class Event(
+    val id: Int = 0,
     val title: String?,
     val description: String?,
     val startTime: Long,
