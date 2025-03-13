@@ -1,3 +1,34 @@
 <resources>
-    <string name="app_name">Calendar</string>
+    <!-- anyone screen start -->
+    <string name="app_name">Календарь</string>
+    <string name="open_settings">Открыть настройки</string>
+    <string name="open_menu">Открыть меню</string>
+    <string-array name="months_of_year">
+        <item name="january">Январь</item>
+        <item name="february">Февраль</item>
+        <item name="march">Март</item>
+        <item name="april">Апрель</item>
+        <item name="may">Май</item>
+        <item name="june">Июнь</item>
+        <item name="july">Июль</item>
+        <item name="august">Август</item>
+        <item name="september">Сентябрь</item>
+        <item name="october">Октябрь</item>
+        <item name="november">Ноябрь</item>
+        <item name="december">Декабрь</item>
+    </string-array>
+    <string-array name="days_of_week">
+        <item name="monday">Пн</item>
+        <item name="tuesday">Вт</item>
+        <item name="wednesday">Ср</item>
+        <item name="thursday">Чт</item>
+        <item name="friday">Пт</item>
+        <item name="saturday">Сб</item>
+        <item name="sunday">Вс</item>
+    </string-array>
+    <!-- anyone screen end -->
+
+    <!-- calendar screen start -->
+    <string name="loading_events_error">Извините! У нас ошибка на нашей стороне. Попробуйте позже.</string>
+    <!-- calendar screen end -->
 </resources>

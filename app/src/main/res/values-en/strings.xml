@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- anyone screen start -->
+    <string name="app_name">Calendar</string>
+    <string name="open_settings">Open settings</string>
+    <string name="open_menu">Open menu</string>
+    <string-array name="months_of_year">
+        <item name="january">January</item>
+        <item name="february">February</item>
+        <item name="march">March</item>
+        <item name="april">April</item>
+        <item name="may">May</item>
+        <item name="june">June</item>
+        <item name="july">July</item>
+        <item name="august">August</item>
+        <item name="september">September</item>
+        <item name="october">October</item>
+        <item name="november">November</item>
+        <item name="december">December</item>
+    </string-array>
+    <string-array name="days_of_week">
+        <item name="monday">Mon</item>
+        <item name="tuesday">Tue</item>
+        <item name="wednesday">Wed</item>
+        <item name="thursday">Thu</item>
+        <item name="friday">Fri</item>
+        <item name="saturday">Sat</item>
+        <item name="sunday">Sun</item>
+    </string-array>
+    <!-- anyone screen end -->
+
+    <!-- calendar screen start -->
+    <string name="loading_events_error">Sorry! We have error on our side. Try later.</string>
+    <!-- calendar screen end -->
+</resources>

@@ -6,10 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.bloodspy.calendar.data.local.event.EventDao
 import com.bloodspy.calendar.data.local.event.EventLocal
+import com.bloodspy.calendar.data.local.notification.NotificationLocal
 import com.bloodspy.calendar.data.local.relationship.RelationshipDao
 import dagger.hilt.InstallIn
 
-@Database(entities = [EventLocal::class], version = 1, exportSchema = false)
+@Database(
+    entities = [EventLocal::class, NotificationLocal::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class CalendarDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
 

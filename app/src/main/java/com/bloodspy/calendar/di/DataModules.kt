@@ -2,9 +2,11 @@ package com.bloodspy.calendar.di
 
 import android.content.Context
 import androidx.room.Room
-import com.bloodspy.calendar.data.DefaultEventRepository
+import com.bloodspy.calendar.data.DefaultCalendarRepository
 import com.bloodspy.calendar.data.local.CalendarDatabase
-import com.bloodspy.calendar.domain.event.EventRepository
+import com.bloodspy.calendar.data.local.event.EventDao
+import com.bloodspy.calendar.data.local.relationship.RelationshipDao
+import com.bloodspy.calendar.domain.CalendarRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -18,7 +20,7 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Singleton
     @Binds
-    abstract fun bindEventRepository(repository: DefaultEventRepository): EventRepository
+    abstract fun bindCalendarRepository(repository: DefaultCalendarRepository): CalendarRepository
 }
 
 @Module
@@ -36,9 +38,10 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideEventDao(database: CalendarDatabase) = database.eventDao()
+    fun provideEventDao(database: CalendarDatabase): EventDao = database.eventDao()
 
     @Singleton
     @Provides
-    fun provideRelationshipDao(database: CalendarDatabase) = database.relationshipDao()
+    fun provideRelationshipDao(database: CalendarDatabase): RelationshipDao =
+        database.relationshipDao()
 }
