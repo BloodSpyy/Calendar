@@ -2,21 +2,20 @@
 <resources>
     <!-- anyone screen start -->
     <string name="app_name">Calendar</string>
-    <string name="open_settings">Open settings</string>
-    <string name="open_menu">Open menu</string>
-    <string-array name="months_of_year">
-        <item name="january">January</item>
-        <item name="february">February</item>
-        <item name="march">March</item>
-        <item name="april">April</item>
-        <item name="may">May</item>
-        <item name="june">June</item>
-        <item name="july">July</item>
-        <item name="august">August</item>
-        <item name="september">September</item>
-        <item name="october">October</item>
-        <item name="november">November</item>
-        <item name="december">December</item>
+
+    <string-array name="months_with_year">
+        <item name="january">January %d</item>
+        <item name="february">February %d</item>
+        <item name="march">March %d</item>
+        <item name="april">April %d</item>
+        <item name="may">May %d</item>
+        <item name="june">June %d</item>
+        <item name="july">July %d</item>
+        <item name="august">August %d</item>
+        <item name="september">September %d</item>
+        <item name="october">October %d</item>
+        <item name="november">November %d</item>
+        <item name="december">December %d</item>
     </string-array>
     <string-array name="days_of_week">
         <item name="monday">Mon</item>
@@ -29,7 +28,18 @@
     </string-array>
     <!-- anyone screen end -->
 
+    <!-- top app bar start -->
+    <string name="top_app_bar_open_settings">Open settings</string>
+    <string name="top_app_bar_open_menu">Open menu</string>
+    <!-- top app bar end -->
+
     <!-- calendar screen start -->
-    <string name="loading_events_error">Sorry! We have error on our side. Try later.</string>
+    <string name="top_app_bar_go_to_previous_month">Go to previous month</string>
+    <string name="top_app_bar_go_to_next_month">Go to next month</string>
+    <string name="top_app_bar_go_to_current_month">Go to current month</string>
+    <string name="calendar_screen_loading_events_error">
+        Sorry! We have error on our side. Try later.
+    </string>
+    <string name="calendar_screen_add_task_button">Add task</string>
     <!-- calendar screen end -->
 </resources>

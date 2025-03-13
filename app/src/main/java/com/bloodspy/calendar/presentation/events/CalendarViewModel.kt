@@ -24,7 +24,7 @@ data class CalendarUiState(
     val items: List<CalendarProduct> = emptyList(),
     val isLoading: Boolean = false,
     val userMessage: Int? = null,
-    val month: Int = LocalDate.now().monthValue,
+    val monthWithYear: Pair<Int, Int> = LocalDate.now().monthValue to LocalDate.now().year,
 )
 
 @HiltViewModel
@@ -47,7 +47,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
         .map { Async.Success(it) }
-        .catch<Async<List<CalendarProduct>>> { emit(Async.Error(R.string.loading_events_error)) }
+        .catch<Async<List<CalendarProduct>>> { emit(Async.Error(R.string.calendar_screen_loading_events_error)) }
 
     private val _isLoading = MutableStateFlow(false)
     private val _userMessage: MutableStateFlow<Int?> = MutableStateFlow(null)
@@ -62,7 +62,7 @@ class CalendarViewModel @Inject constructor(
                 items = daysWithEvents.data,
                 isLoading = isLoading,
                 userMessage = userMessage,
-                month = _selectedDate.value.monthValue
+                monthWithYear = _selectedDate.value.monthValue to _selectedDate.value.year
             )
         }
     }.stateIn(
@@ -77,5 +77,9 @@ class CalendarViewModel @Inject constructor(
 
     fun onRightSwipe() {
         _selectedDate.update { it.plusMonths(1) }
+    }
+
+    fun onHomeClick() {
+        _selectedDate.value = LocalDate.now().withDayOfMonth(FIRST_DAY)
     }
 }

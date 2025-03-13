@@ -1,21 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- anyone screen start -->
     <string name="app_name">Календарь</string>
-    <string name="open_settings">Открыть настройки</string>
-    <string name="open_menu">Открыть меню</string>
-    <string-array name="months_of_year">
-        <item name="january">Январь</item>
-        <item name="february">Февраль</item>
-        <item name="march">Март</item>
-        <item name="april">Апрель</item>
-        <item name="may">Май</item>
-        <item name="june">Июнь</item>
-        <item name="july">Июль</item>
-        <item name="august">Август</item>
-        <item name="september">Сентябрь</item>
-        <item name="october">Октябрь</item>
-        <item name="november">Ноябрь</item>
-        <item name="december">Декабрь</item>
+
+    <string-array name="months_with_year">
+        <item name="january">Январь %dг.</item>
+        <item name="february">Февраль %dг.</item>
+        <item name="march">Март %dг.</item>
+        <item name="april">Апрель %dг.</item>
+        <item name="may">Май %dг.</item>
+        <item name="june">Июнь %dг.</item>
+        <item name="july">Июль %dг.</item>
+        <item name="august">Август %dг.</item>
+        <item name="september">Сентябрь %dг.</item>
+        <item name="october">Октябрь %dг.</item>
+        <item name="november">Ноябрь %dг.</item>
+        <item name="december">Декабрь %dг.</item>
     </string-array>
     <string-array name="days_of_week">
         <item name="monday">Пн</item>
@@ -28,7 +28,18 @@
     </string-array>
     <!-- anyone screen end -->
 
+    <!-- calendar top app bar start -->
+    <string name="top_app_bar_go_to_previous_month">Перейти к предыдущему месяцу</string>
+    <string name="top_app_bar_go_to_next_month">Перейти к следующему месяцу</string>
+    <string name="top_app_bar_go_to_current_month">Перейти к текущему месяцу</string>
+    <string name="top_app_bar_open_settings">Открыть настройки</string>
+    <string name="top_app_bar_open_menu">Открыть меню</string>
+    <!-- calendar top app bar end -->
+
     <!-- calendar screen start -->
-    <string name="loading_events_error">Извините! У нас ошибка на нашей стороне. Попробуйте позже.</string>
+    <string name="calendar_screen_loading_events_error">
+        Извините! У нас ошибка на нашей стороне. Попробуйте позже.
+    </string>
+    <string name="calendar_screen_add_task_button">Добавить задачу</string>
     <!-- calendar screen end -->
 </resources>

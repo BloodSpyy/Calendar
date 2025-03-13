@@ -1,32 +1,46 @@
 package com.bloodspy.calendar.presentation.events
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.domain.CalendarProduct
 import com.bloodspy.calendar.utils.BoxCentered
-import com.bloodspy.calendar.utils.CalendarTopAppBar
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
 import com.bloodspy.calendar.utils.LoadingProgress
 import java.time.LocalDate
@@ -35,24 +49,44 @@ import java.time.LocalDate
 fun CalendarScreen(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = hiltViewModel(),
+    onMenuClick: () -> Unit,
+    onTasksClick: () -> Unit,
+    onAddTaskClick: () -> Unit,
+    onCalendarItemClick: (CalendarProduct) -> Unit,
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CalendarTopAppBar(
-                // Index adjustment: months start at 1, array at 0
-                title = stringArrayResource(R.array.months_of_year)[uiState.value.month - 1],
-                onMenuClick = { viewModel.onLeftSwipe() },
-                onTasksClick = { viewModel.onRightSwipe() }
+                title = stringResource(R.string.app_name),
+                onMenuClick = onMenuClick,
+                onTasksClick = onTasksClick,
+                onHomeClick = { viewModel.onHomeClick() }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddTaskClick,
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(R.string.calendar_screen_add_task_button)
+                )
+            }
         }
     ) { paddingValues ->
+        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
         CalendarContent(
             modifier = Modifier.padding(paddingValues),
             calendarsProduct = uiState.value.items,
-            isLoading = uiState.value.isLoading
+            isLoading = uiState.value.isLoading,
+            monthWithYear = uiState.value.monthWithYear,
+            onItemClick = onCalendarItemClick,
+            onArrowBackClick = { viewModel.onLeftSwipe() },
+            onArrowForwardClick = { viewModel.onRightSwipe() }
         )
     }
 }
@@ -62,33 +96,70 @@ private fun CalendarContent(
     modifier: Modifier = Modifier,
     calendarsProduct: List<CalendarProduct>,
     isLoading: Boolean,
+    monthWithYear: Pair<Int, Int>,
+    onArrowBackClick: () -> Unit,
+    onArrowForwardClick: () -> Unit,
+    onItemClick: (CalendarProduct) -> Unit,
 ) {
     val daysOfWeek = stringArrayResource(R.array.days_of_week)
 
     if (isLoading) {
-        BoxCentered(modifier = Modifier.fillMaxSize()) { LoadingProgress() }
+        BoxCentered(modifier = modifier.fillMaxSize()) { LoadingProgress() }
     } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(DAYS_IN_WEEK),
-            modifier = modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(top = 8.dp)
-        ) {
-            items(daysOfWeek) { dayOfWeek ->
+        Column(modifier = modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onArrowBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month)
+                    )
+                }
+
                 Text(
-                    text = dayOfWeek,
-                    textAlign = TextAlign.Center
+                    text = String.format(
+                        // Index adjustment: months start at 1, array at 0
+                        stringArrayResource(R.array.months_with_year)[monthWithYear.first - 1],
+                        monthWithYear.second
+                    ),
+                    fontSize = 18.sp
                 )
+
+                IconButton(onClick = onArrowForwardClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                        contentDescription = stringResource(R.string.top_app_bar_go_to_next_month)
+                    )
+                }
             }
 
-            items(calendarsProduct) { calendarProduct ->
-                val isCurrentDate = calendarProduct.date == LocalDate.now()
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(DAYS_IN_WEEK),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(daysOfWeek) { dayOfWeek ->
+                    Text(
+                        text = dayOfWeek,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
-                CalendarItem(
-                    calendarItem = calendarProduct,
-                    isCurrentDate = isCurrentDate
-                )
+                items(calendarsProduct) { calendarProduct ->
+                    val isCurrentDate = calendarProduct.date == LocalDate.now()
+
+                    CalendarItem(
+                        calendarItem = calendarProduct,
+                        isCurrentDate = isCurrentDate,
+                        onItemClick = onItemClick
+                    )
+                }
             }
         }
     }
@@ -99,14 +170,15 @@ private fun CalendarItem(
     modifier: Modifier = Modifier,
     calendarItem: CalendarProduct,
     isCurrentDate: Boolean,
+    onItemClick: (CalendarProduct) -> Unit,
 ) {
     val columnModifier = modifier
         .fillMaxSize()
+        .clip(CircleShape)
+        .clickable { onItemClick(calendarItem) }
         .then(
             if (isCurrentDate) {
-                Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onBackground)
+                Modifier.background(MaterialTheme.colorScheme.onBackground)
             } else {
                 Modifier
             }
@@ -127,4 +199,40 @@ private fun CalendarItem(
             text = calendarItem.date.dayOfMonth.toString()
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CalendarTopAppBar(
+    title: String,
+    onTasksClick: () -> Unit,
+    onMenuClick: () -> Unit,
+    onHomeClick: () -> Unit,
+) {
+    TopAppBar(
+        modifier = Modifier.fillMaxWidth(),
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = stringResource(R.string.top_app_bar_open_menu)
+                )
+            }
+        },
+        title = { Text(text = title) },
+        actions = {
+            IconButton(onClick = onHomeClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Home,
+                    contentDescription = stringResource(R.string.top_app_bar_go_to_current_month)
+                )
+            }
+            IconButton(onClick = onTasksClick) {
+                Icon(
+                    painter = painterResource(R.drawable.tasks),
+                    contentDescription = stringResource(R.string.top_app_bar_open_settings)
+                )
+            }
+        }
+    )
 }
