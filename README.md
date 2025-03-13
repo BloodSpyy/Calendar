@@ -2,8 +2,8 @@
 
 ## In this app you can:
 
-1. Add, remove, or edit events.
-2. Receive a notification on or before the event day.
+1. Add, remove, or edit eventProducts.
+2. Receive a notification on or before the eventProduct day.
 3. Integrated with VK.
 4. Choose between dark and light themes.
 5. Choose your music for notifications.

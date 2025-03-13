@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.ui.theme
+package com.bloodspy.calendar.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

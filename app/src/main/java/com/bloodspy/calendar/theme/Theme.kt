@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.ui.theme
+package com.bloodspy.calendar.theme
 
 import android.app.Activity
 import android.os.Build
