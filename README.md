@@ -17,6 +17,3 @@
 5. Networking with Retrofit2.
 6. Data storage implemented with Room.
 7. Multithreading managed with Coroutines.
-
-## Database schema:
-![DatabaseSchema](https://github.com/BloodSpyy/Calendar/blob/main/static/DatabaseSchema.png)
