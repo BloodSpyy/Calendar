@@ -41,5 +41,6 @@
         Извините! У нас ошибка на нашей стороне. Попробуйте позже.
     </string>
     <string name="calendar_screen_add_task_button">Добавить задачу</string>
+    <string name="top_app_bar_choose_month">Выбрать месяц</string>
     <!-- calendar screen end -->
 </resources>

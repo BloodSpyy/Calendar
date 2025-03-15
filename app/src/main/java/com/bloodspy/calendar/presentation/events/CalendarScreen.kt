@@ -1,5 +1,6 @@
 package com.bloodspy.calendar.presentation.events
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
@@ -61,7 +65,7 @@ fun CalendarScreen(
                 title = stringResource(R.string.app_name),
                 onMenuClick = onMenuClick,
                 onTasksClick = onTasksClick,
-                onHomeClick = { viewModel.onHomeClick() }
+                onHomeClick = viewModel::onHomeClick
             )
         },
         floatingActionButton = {
@@ -85,8 +89,8 @@ fun CalendarScreen(
             isLoading = uiState.value.isLoading,
             monthWithYear = uiState.value.monthWithYear,
             onItemClick = onCalendarItemClick,
-            onArrowBackClick = { viewModel.onLeftSwipe() },
-            onArrowForwardClick = { viewModel.onRightSwipe() }
+            onArrowBackClick = viewModel::onArrowBackClick,
+            onArrowForwardClick = viewModel::onArrowForwardClick
         )
     }
 }
@@ -101,66 +105,27 @@ private fun CalendarContent(
     onArrowForwardClick: () -> Unit,
     onItemClick: (CalendarProduct) -> Unit,
 ) {
-    val daysOfWeek = stringArrayResource(R.array.days_of_week)
-
     if (isLoading) {
-        BoxCentered(modifier = modifier.fillMaxSize()) { LoadingProgress() }
-    } else {
+        BoxCentered(
+            modifier = modifier
+                .fillMaxSize()
+                .zIndex(1f)
+        ) { LoadingProgress() }
+    }
+
+    AnimatedContent(targetState = monthWithYear) {
         Column(modifier = modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onArrowBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month)
-                    )
-                }
+            CalendarHeader(
+                monthWithYear = it,
+                onArrowBackClick = onArrowBackClick,
+                onArrowForwardClick = onArrowForwardClick,
+                onMonthWithYearClick = {}
+            )
 
-                Text(
-                    text = String.format(
-                        // Index adjustment: months start at 1, array at 0
-                        stringArrayResource(R.array.months_with_year)[monthWithYear.first - 1],
-                        monthWithYear.second
-                    ),
-                    fontSize = 18.sp
-                )
-
-                IconButton(onClick = onArrowForwardClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                        contentDescription = stringResource(R.string.top_app_bar_go_to_next_month)
-                    )
-                }
-            }
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(DAYS_IN_WEEK),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                items(daysOfWeek) { dayOfWeek ->
-                    Text(
-                        text = dayOfWeek,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                items(calendarsProduct) { calendarProduct ->
-                    val isCurrentDate = calendarProduct.date == LocalDate.now()
-
-                    CalendarItem(
-                        calendarItem = calendarProduct,
-                        isCurrentDate = isCurrentDate,
-                        onItemClick = onItemClick
-                    )
-                }
-            }
+            CalendarGrid(
+                calendarsProduct = calendarsProduct,
+                onItemClick = onItemClick
+            )
         }
     }
 }
@@ -172,24 +137,24 @@ private fun CalendarItem(
     isCurrentDate: Boolean,
     onItemClick: (CalendarProduct) -> Unit,
 ) {
-    val columnModifier = modifier
-        .fillMaxSize()
-        .clip(CircleShape)
-        .clickable { onItemClick(calendarItem) }
-        .then(
-            if (isCurrentDate) {
-                Modifier.background(MaterialTheme.colorScheme.onBackground)
-            } else {
-                Modifier
-            }
-        )
-        .padding(12.dp)
+    val backgroundColor = if (isCurrentDate) {
+        MaterialTheme.colorScheme.onBackground
+    } else {
+        MaterialTheme.colorScheme.background
+    }
 
     val textColor = if (isCurrentDate) {
         MaterialTheme.colorScheme.background
     } else {
         MaterialTheme.colorScheme.onBackground
     }
+
+    val columnModifier = modifier
+        .fillMaxSize()
+        .clip(CircleShape)
+        .clickable { onItemClick(calendarItem) }
+        .background(backgroundColor)
+        .padding(12.dp)
 
     Column(modifier = columnModifier) {
         Text(
@@ -198,6 +163,84 @@ private fun CalendarItem(
             color = textColor,
             text = calendarItem.date.dayOfMonth.toString()
         )
+    }
+}
+
+@Composable
+private fun CalendarHeader(
+    monthWithYear: Pair<Int, Int>,
+    onArrowBackClick: () -> Unit,
+    onArrowForwardClick: () -> Unit,
+    onMonthWithYearClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onArrowBackClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month)
+            )
+        }
+
+        Row(modifier = Modifier.clickable { onMonthWithYearClick() }) {
+            Text(
+                text = String.format(
+                    // Index adjustment: months start at 1, array at 0
+                    stringArrayResource(R.array.months_with_year)[monthWithYear.first - 1],
+                    monthWithYear.second
+                ),
+                fontSize = 18.sp
+            )
+
+            Icon(
+                imageVector = Icons.Outlined.ArrowDropDown,
+                contentDescription = stringResource(R.string.top_app_bar_choose_month)
+            )
+        }
+
+        IconButton(onClick = onArrowForwardClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                contentDescription = stringResource(R.string.top_app_bar_go_to_next_month)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CalendarGrid(
+    calendarsProduct: List<CalendarProduct>,
+    onItemClick: (CalendarProduct) -> Unit,
+) {
+    val daysOfWeek = stringArrayResource(R.array.days_of_week)
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(DAYS_IN_WEEK),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        items(daysOfWeek, key = { it }) { dayOfWeek ->
+            Text(
+                text = dayOfWeek,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        items(calendarsProduct, key = { it.date }) { calendarProduct ->
+            val isCurrentDate = calendarProduct.date == LocalDate.now()
+
+            CalendarItem(
+                calendarItem = calendarProduct,
+                isCurrentDate = isCurrentDate,
+                onItemClick = onItemClick
+            )
+        }
     }
 }
 

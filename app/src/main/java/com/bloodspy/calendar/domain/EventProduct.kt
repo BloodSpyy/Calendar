@@ -1,8 +1,10 @@
 package com.bloodspy.calendar.domain
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import java.time.LocalDateTime
 
+@Immutable
 data class EventProduct(
     val id: Int = 0,
     val title: String?,

@@ -33,16 +33,17 @@ class CalendarViewModel @Inject constructor(
 ) : ViewModel() {
     private val _selectedDate =
         MutableStateFlow<LocalDate>(LocalDate.now().withDayOfMonth(FIRST_DAY))
-    private val _events = calendarRepository.getAll()
 
-    private val _daysWithEvents = combine(_selectedDate, _events) { date, events ->
+    private val _eventsByDays = calendarRepository.getAll()
+        .map { events -> events.groupBy { event -> event.startTime.toLocalDate() } }
+
+    private val _daysWithEvents = combine(_selectedDate, _eventsByDays) { date, events ->
         val days = getMonthDays(date)
-        val eventsByDays = events.groupBy { event -> event.startTime.toLocalDate() }
 
         days.map { day ->
             CalendarProduct(
                 date = day,
-                events = eventsByDays[day]
+                events = events[day]
             )
         }
     }
@@ -57,11 +58,10 @@ class CalendarViewModel @Inject constructor(
     ) { daysWithEvents, userMessage, isLoading ->
         when (daysWithEvents) {
             is Async.Error -> CalendarUiState(userMessage = daysWithEvents.errorMessage)
-            Async.Loading -> CalendarUiState(isLoading = true)
             is Async.Success -> CalendarUiState(
                 items = daysWithEvents.data,
-                isLoading = isLoading,
                 userMessage = userMessage,
+                isLoading = isLoading,
                 monthWithYear = _selectedDate.value.monthValue to _selectedDate.value.year
             )
         }
@@ -71,11 +71,11 @@ class CalendarViewModel @Inject constructor(
         initialValue = CalendarUiState(isLoading = true)
     )
 
-    fun onLeftSwipe() {
+    fun onArrowBackClick() {
         _selectedDate.update { it.minusMonths(1) }
     }
 
-    fun onRightSwipe() {
+    fun onArrowForwardClick() {
         _selectedDate.update { it.plusMonths(1) }
     }
 

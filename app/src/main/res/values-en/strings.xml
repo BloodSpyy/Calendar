@@ -41,5 +41,6 @@
         Sorry! We have error on our side. Try later.
     </string>
     <string name="calendar_screen_add_task_button">Add task</string>
+    <string name="top_app_bar_choose_month">Choose month</string>
     <!-- calendar screen end -->
 </resources>
