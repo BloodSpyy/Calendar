@@ -30,7 +30,7 @@
     </string-array>
 
     <string-array name="calendar_screen_months_carousel">
-        <item name="january">Jan</item>
+        <item name="january">Jan %d</item>
         <item name="february">Feb</item>
         <item name="march">Mar</item>
         <item name="april">Apr</item>

@@ -1,32 +1,20 @@
 package com.bloodspy.calendar.utils
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyListState
 
-@Composable
-fun BoxCentered(
-    modifier: Modifier = Modifier,
-    propagateMinConstraints: Boolean = false,
-    content: @Composable () -> Unit,
-) {
-    Box(
-        modifier = modifier,
-        propagateMinConstraints = propagateMinConstraints,
-        contentAlignment = Alignment.Center
-    ) { content() }
-}
+fun isClickedMonthFullyVisible(lazyListState: LazyListState, clickedMonthIndex: Int): Boolean {
+    with(lazyListState.layoutInfo) {
+        val clickedMonthIndexVisibleInfo = visibleItemsInfo.find { it.index == clickedMonthIndex }
 
-@Composable
-fun LoadingProgress(modifier: Modifier = Modifier) {
-    CircularProgressIndicator(
-        modifier = modifier.size(72.dp),
-        color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant
-    )
+        return if (clickedMonthIndexVisibleInfo == null) {
+            false
+        } else {
+            val isBeyondRightBorder =
+                viewportEndOffset - clickedMonthIndexVisibleInfo.offset < clickedMonthIndexVisibleInfo.size
+            val isBeyondLeftBorder =
+                viewportStartOffset + clickedMonthIndexVisibleInfo.offset < clickedMonthIndexVisibleInfo.size
+
+            return !isBeyondRightBorder && !isBeyondLeftBorder
+        }
+    }
 }

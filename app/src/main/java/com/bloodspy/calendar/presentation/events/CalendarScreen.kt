@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -58,8 +59,8 @@ import com.bloodspy.calendar.R
 import com.bloodspy.calendar.domain.CalendarProduct
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
 import com.bloodspy.calendar.utils.getMonthsCarousel
+import com.bloodspy.calendar.utils.isClickedMonthFullyVisible
 import java.time.LocalDate
-import java.time.Month
 import java.time.YearMonth
 
 @Composable
@@ -166,65 +167,6 @@ private fun CalendarContent(
 }
 
 @Composable
-private fun MonthsCarousel(
-    modifier: Modifier = Modifier,
-    monthWithYear: YearMonth,
-    onMonthClick: (YearMonth) -> Unit,
-) {
-    val monthsCarousel = remember { monthWithYear.year.getMonthsCarousel() }
-    val lazyListState =
-        rememberLazyListState(initialFirstVisibleItemIndex = monthsCarousel.indexOf(monthWithYear))
-
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        state = lazyListState
-    ) {
-        items(monthsCarousel, key = { it }) { monthToShow ->
-            if (monthToShow.month == Month.JANUARY) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(percent = 10))
-                        // Apply padding: left = 8.dp, right = 16.dp, top and bottom = 4.dp.
-                        // The right padding is twice the left to provide extra space between the year and January.
-                        .padding(start = 8.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
-                    text = monthToShow.year.toString(),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            val (background, contentColor, borderColor) = if (monthToShow == monthWithYear) {
-                Triple(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.onPrimary,
-                    MaterialTheme.colorScheme.primary
-                )
-            } else {
-                Triple(
-                    MaterialTheme.colorScheme.background,
-                    MaterialTheme.colorScheme.onBackground,
-                    MaterialTheme.colorScheme.secondaryContainer
-                )
-            }
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(background)
-                    .clip(RoundedCornerShape(percent = 10))
-                    .border(width = 2.dp, color = borderColor)
-                    .clickable { onMonthClick(monthToShow) }
-                    .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
-                // Index adjustment: months start at 1, array at 0
-                text = stringArrayResource(R.array.calendar_screen_months_carousel)[monthToShow.monthValue - 1],
-                color = contentColor
-            )
-        }
-    }
-}
-
-@Composable
 private fun CalendarHeader(
     monthWithYear: YearMonth,
     onArrowBackClick: () -> Unit,
@@ -265,6 +207,73 @@ private fun CalendarHeader(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                 contentDescription = stringResource(R.string.top_app_bar_go_to_next_month),
                 tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+private fun MonthsCarousel(
+    modifier: Modifier = Modifier,
+    monthWithYear: YearMonth,
+    onMonthClick: (YearMonth) -> Unit,
+) {
+    val monthsCarousel = remember { monthWithYear.year.getMonthsCarousel() }
+    val lazyListState =
+        rememberLazyListState(
+            initialFirstVisibleItemIndex = monthsCarousel.indexOf(monthWithYear)
+        )
+
+    LaunchedEffect(monthWithYear) {
+        val monthIndex = monthsCarousel.indexOf(monthWithYear)
+
+        if (!isClickedMonthFullyVisible(lazyListState, monthIndex)) {
+            with(lazyListState) {
+                val itemScrollOffset = if (monthIndex >= layoutInfo.visibleItemsInfo.last().index) {
+                    layoutInfo.visibleItemsInfo.last().size
+                } else {
+                    layoutInfo.visibleItemsInfo.first().size
+                }
+
+                lazyListState.animateScrollToItem(monthIndex, -itemScrollOffset)
+            }
+        }
+    }
+
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        state = lazyListState
+    ) {
+        items(monthsCarousel, key = { it }) { monthToShow ->
+            val (background, contentColor, borderColor) = if (monthToShow == monthWithYear) {
+                Triple(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.onPrimary,
+                    MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Triple(
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.onBackground,
+                    MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(background)
+                    .clip(RoundedCornerShape(percent = 20))
+                    .border(width = 2.dp, color = borderColor)
+                    .clickable { onMonthClick(monthToShow) }
+                    .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+                text = String.format(
+                    // Index adjustment: months start at 1, array at 0
+                    stringArrayResource(R.array.calendar_screen_months_carousel)[monthToShow.monthValue - 1],
+                    monthToShow.year
+                ),
+                color = contentColor
             )
         }
     }
@@ -312,30 +321,24 @@ private fun CalendarItem(
     isCurrentDate: Boolean,
     onItemClick: (CalendarProduct) -> Unit,
 ) {
-    val backgroundColor = if (isCurrentDate) {
-        MaterialTheme.colorScheme.primary
+    val (background, contentColor) = if (isCurrentDate) {
+        Pair(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
     } else {
-        MaterialTheme.colorScheme.background
-    }
-
-    val textColor = if (isCurrentDate) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onBackground
+        Pair(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.onBackground)
     }
 
     val columnModifier = modifier
         .fillMaxSize()
         .clip(CircleShape)
         .clickable { onItemClick(calendarItem) }
-        .background(backgroundColor)
+        .background(background)
         .padding(16.dp)
 
     Column(modifier = columnModifier) {
         Text(
             modifier = Modifier.fillMaxSize(),
             textAlign = TextAlign.Center,
-            color = textColor,
+            color = contentColor,
             text = calendarItem.date.dayOfMonth.toString()
         )
     }
