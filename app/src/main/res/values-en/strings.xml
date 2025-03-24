@@ -2,8 +2,49 @@
 <resources>
     <!-- anyone screen start -->
     <string name="app_name">Calendar</string>
+    <!-- anyone screen end -->
 
-    <string-array name="months_with_year">
+    <!-- top app bar start -->
+    <string name="top_app_bar_open_settings">Open settings</string>
+    <string name="top_app_bar_open_menu">Open menu</string>
+    <string name="top_app_bar_go_to_previous_month">Go to previous month</string>
+    <string name="top_app_bar_go_to_next_month">Go to next month</string>
+    <string name="top_app_bar_go_to_current_month">Go to current month</string>
+    <string name="top_app_bar_choose_month">Choose month</string>
+    <!-- top app bar end -->
+
+    <!-- calendar screen start -->
+    <string name="calendar_screen_loading_events_error">
+        Sorry! We have error on our side. Try later.
+    </string>
+    <string name="calendar_screen_add_task_button">Add task</string>
+
+    <string-array name="calendar_screen_days_of_week">
+        <item name="monday">Mon</item>
+        <item name="tuesday">Tue</item>
+        <item name="wednesday">Wed</item>
+        <item name="thursday">Thu</item>
+        <item name="friday">Fri</item>
+        <item name="saturday">Sat</item>
+        <item name="sunday">Sun</item>
+    </string-array>
+
+    <string-array name="calendar_screen_months_carousel">
+        <item name="january">Jan</item>
+        <item name="february">Feb</item>
+        <item name="march">Mar</item>
+        <item name="april">Apr</item>
+        <item name="may">May</item>
+        <item name="june">June</item>
+        <item name="july">July</item>
+        <item name="august">Aug</item>
+        <item name="september">Sep</item>
+        <item name="october">Oct</item>
+        <item name="november">Nov</item>
+        <item name="december">Dec</item>
+    </string-array>
+
+    <string-array name="calendar_screen_month_with_year">
         <item name="january">January %d</item>
         <item name="february">February %d</item>
         <item name="march">March %d</item>
@@ -17,30 +58,5 @@
         <item name="november">November %d</item>
         <item name="december">December %d</item>
     </string-array>
-    <string-array name="days_of_week">
-        <item name="monday">Mon</item>
-        <item name="tuesday">Tue</item>
-        <item name="wednesday">Wed</item>
-        <item name="thursday">Thu</item>
-        <item name="friday">Fri</item>
-        <item name="saturday">Sat</item>
-        <item name="sunday">Sun</item>
-    </string-array>
-    <!-- anyone screen end -->
-
-    <!-- top app bar start -->
-    <string name="top_app_bar_open_settings">Open settings</string>
-    <string name="top_app_bar_open_menu">Open menu</string>
-    <!-- top app bar end -->
-
-    <!-- calendar screen start -->
-    <string name="top_app_bar_go_to_previous_month">Go to previous month</string>
-    <string name="top_app_bar_go_to_next_month">Go to next month</string>
-    <string name="top_app_bar_go_to_current_month">Go to current month</string>
-    <string name="calendar_screen_loading_events_error">
-        Sorry! We have error on our side. Try later.
-    </string>
-    <string name="calendar_screen_add_task_button">Add task</string>
-    <string name="top_app_bar_choose_month">Choose month</string>
     <!-- calendar screen end -->
 </resources>

@@ -1,7 +1,15 @@
 package com.bloodspy.calendar.presentation.events
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,11 +17,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -29,7 +40,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,16 +52,15 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.domain.CalendarProduct
-import com.bloodspy.calendar.utils.BoxCentered
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
-import com.bloodspy.calendar.utils.LoadingProgress
+import com.bloodspy.calendar.utils.getMonthsCarousel
 import java.time.LocalDate
+import java.time.Month
+import java.time.YearMonth
 
 @Composable
 fun CalendarScreen(
@@ -60,6 +73,8 @@ fun CalendarScreen(
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             CalendarTopAppBar(
                 title = stringResource(R.string.app_name),
@@ -71,8 +86,8 @@ fun CalendarScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddTaskClick,
-                containerColor = MaterialTheme.colorScheme.onBackground,
-                contentColor = MaterialTheme.colorScheme.background
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
@@ -81,16 +96,18 @@ fun CalendarScreen(
             }
         }
     ) { paddingValues ->
-        val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         CalendarContent(
             modifier = Modifier.padding(paddingValues),
-            calendarsProduct = uiState.value.items,
-            isLoading = uiState.value.isLoading,
-            monthWithYear = uiState.value.monthWithYear,
+            calendarsProduct = uiState.calendarItems,
+            isMonthCarouselVisible = uiState.isMonthsCarouselVisible,
+            monthWithYear = uiState.monthWithYear,
             onItemClick = onCalendarItemClick,
             onArrowBackClick = viewModel::onArrowBackClick,
-            onArrowForwardClick = viewModel::onArrowForwardClick
+            onArrowForwardClick = viewModel::onArrowForwardClick,
+            onMonthWithYearClick = viewModel::onMonthWithYearClick,
+            onMonthClick = viewModel::onMonthClick
         )
     }
 }
@@ -99,29 +116,47 @@ fun CalendarScreen(
 private fun CalendarContent(
     modifier: Modifier = Modifier,
     calendarsProduct: List<CalendarProduct>,
-    isLoading: Boolean,
-    monthWithYear: Pair<Int, Int>,
+    isMonthCarouselVisible: Boolean,
+    monthWithYear: YearMonth,
     onArrowBackClick: () -> Unit,
     onArrowForwardClick: () -> Unit,
+    onMonthWithYearClick: () -> Unit,
     onItemClick: (CalendarProduct) -> Unit,
+    onMonthClick: (YearMonth) -> Unit,
 ) {
-    if (isLoading) {
-        BoxCentered(
-            modifier = modifier
-                .fillMaxSize()
-                .zIndex(1f)
-        ) { LoadingProgress() }
-    }
+    Column(modifier = modifier.fillMaxSize()) {
+        CalendarHeader(
+            monthWithYear = monthWithYear,
+            onArrowBackClick = onArrowBackClick,
+            onArrowForwardClick = onArrowForwardClick,
+            onMonthWithYearClick = onMonthWithYearClick
+        )
 
-    AnimatedContent(targetState = monthWithYear) {
-        Column(modifier = modifier.fillMaxSize()) {
-            CalendarHeader(
-                monthWithYear = it,
-                onArrowBackClick = onArrowBackClick,
-                onArrowForwardClick = onArrowForwardClick,
-                onMonthWithYearClick = {}
-            )
+        if (isMonthCarouselVisible) MonthsCarousel(
+            monthWithYear = monthWithYear,
+            onMonthClick = onMonthClick
+        )
 
+        AnimatedContent(
+            targetState = calendarsProduct,
+            transitionSpec = {
+                if (initialState.isEmpty() || targetState.isEmpty()) {
+                    EnterTransition.None togetherWith ExitTransition.None
+                } else if (targetState.first().date > initialState.first().date) {
+                    slideInHorizontally { fullWidth ->
+                        fullWidth
+                    } + scaleIn() togetherWith slideOutHorizontally { fullWidth ->
+                        -fullWidth
+                    } + scaleOut()
+                } else {
+                    slideInHorizontally { fullWidth ->
+                        -fullWidth
+                    } + scaleIn() togetherWith slideOutHorizontally { fullWidth ->
+                        fullWidth
+                    } + scaleOut()
+                }
+            }
+        ) { calendarsProduct ->
             CalendarGrid(
                 calendarsProduct = calendarsProduct,
                 onItemClick = onItemClick
@@ -131,44 +166,67 @@ private fun CalendarContent(
 }
 
 @Composable
-private fun CalendarItem(
+private fun MonthsCarousel(
     modifier: Modifier = Modifier,
-    calendarItem: CalendarProduct,
-    isCurrentDate: Boolean,
-    onItemClick: (CalendarProduct) -> Unit,
+    monthWithYear: YearMonth,
+    onMonthClick: (YearMonth) -> Unit,
 ) {
-    val backgroundColor = if (isCurrentDate) {
-        MaterialTheme.colorScheme.onBackground
-    } else {
-        MaterialTheme.colorScheme.background
-    }
+    val monthsCarousel = remember { monthWithYear.year.getMonthsCarousel() }
+    val lazyListState =
+        rememberLazyListState(initialFirstVisibleItemIndex = monthsCarousel.indexOf(monthWithYear))
 
-    val textColor = if (isCurrentDate) {
-        MaterialTheme.colorScheme.background
-    } else {
-        MaterialTheme.colorScheme.onBackground
-    }
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        state = lazyListState
+    ) {
+        items(monthsCarousel, key = { it }) { monthToShow ->
+            if (monthToShow.month == Month.JANUARY) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(percent = 10))
+                        // Apply padding: left = 8.dp, right = 16.dp, top and bottom = 4.dp.
+                        // The right padding is twice the left to provide extra space between the year and January.
+                        .padding(start = 8.dp, end = 16.dp, top = 4.dp, bottom = 4.dp),
+                    text = monthToShow.year.toString(),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
 
-    val columnModifier = modifier
-        .fillMaxSize()
-        .clip(CircleShape)
-        .clickable { onItemClick(calendarItem) }
-        .background(backgroundColor)
-        .padding(12.dp)
+            val (background, contentColor, borderColor) = if (monthToShow == monthWithYear) {
+                Triple(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.onPrimary,
+                    MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Triple(
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.onBackground,
+                    MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
 
-    Column(modifier = columnModifier) {
-        Text(
-            modifier = Modifier.fillMaxSize(),
-            textAlign = TextAlign.Center,
-            color = textColor,
-            text = calendarItem.date.dayOfMonth.toString()
-        )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(background)
+                    .clip(RoundedCornerShape(percent = 10))
+                    .border(width = 2.dp, color = borderColor)
+                    .clickable { onMonthClick(monthToShow) }
+                    .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+                // Index adjustment: months start at 1, array at 0
+                text = stringArrayResource(R.array.calendar_screen_months_carousel)[monthToShow.monthValue - 1],
+                color = contentColor
+            )
+        }
     }
 }
 
 @Composable
 private fun CalendarHeader(
-    monthWithYear: Pair<Int, Int>,
+    monthWithYear: YearMonth,
     onArrowBackClick: () -> Unit,
     onArrowForwardClick: () -> Unit,
     onMonthWithYearClick: () -> Unit,
@@ -181,7 +239,8 @@ private fun CalendarHeader(
         IconButton(onClick = onArrowBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month)
+                contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -189,22 +248,23 @@ private fun CalendarHeader(
             Text(
                 text = String.format(
                     // Index adjustment: months start at 1, array at 0
-                    stringArrayResource(R.array.months_with_year)[monthWithYear.first - 1],
-                    monthWithYear.second
+                    stringArrayResource(R.array.calendar_screen_month_with_year)[monthWithYear.monthValue - 1],
+                    monthWithYear.year
                 ),
-                fontSize = 18.sp
             )
 
             Icon(
                 imageVector = Icons.Outlined.ArrowDropDown,
-                contentDescription = stringResource(R.string.top_app_bar_choose_month)
+                contentDescription = stringResource(R.string.top_app_bar_choose_month),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
         IconButton(onClick = onArrowForwardClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                contentDescription = stringResource(R.string.top_app_bar_go_to_next_month)
+                contentDescription = stringResource(R.string.top_app_bar_go_to_next_month),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -215,7 +275,7 @@ private fun CalendarGrid(
     calendarsProduct: List<CalendarProduct>,
     onItemClick: (CalendarProduct) -> Unit,
 ) {
-    val daysOfWeek = stringArrayResource(R.array.days_of_week)
+    val daysOfWeek = stringArrayResource(R.array.calendar_screen_days_of_week)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(DAYS_IN_WEEK),
@@ -228,7 +288,8 @@ private fun CalendarGrid(
         items(daysOfWeek, key = { it }) { dayOfWeek ->
             Text(
                 text = dayOfWeek,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -244,6 +305,42 @@ private fun CalendarGrid(
     }
 }
 
+@Composable
+private fun CalendarItem(
+    modifier: Modifier = Modifier,
+    calendarItem: CalendarProduct,
+    isCurrentDate: Boolean,
+    onItemClick: (CalendarProduct) -> Unit,
+) {
+    val backgroundColor = if (isCurrentDate) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.background
+    }
+
+    val textColor = if (isCurrentDate) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onBackground
+    }
+
+    val columnModifier = modifier
+        .fillMaxSize()
+        .clip(CircleShape)
+        .clickable { onItemClick(calendarItem) }
+        .background(backgroundColor)
+        .padding(16.dp)
+
+    Column(modifier = columnModifier) {
+        Text(
+            modifier = Modifier.fillMaxSize(),
+            textAlign = TextAlign.Center,
+            color = textColor,
+            text = calendarItem.date.dayOfMonth.toString()
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CalendarTopAppBar(
@@ -254,11 +351,18 @@ private fun CalendarTopAppBar(
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
+        colors = TopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
+        ),
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Outlined.Menu,
-                    contentDescription = stringResource(R.string.top_app_bar_open_menu)
+                    contentDescription = stringResource(R.string.top_app_bar_open_menu),
                 )
             }
         },
