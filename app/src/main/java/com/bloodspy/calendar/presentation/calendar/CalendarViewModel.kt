@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.presentation.events
+package com.bloodspy.calendar.presentation.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

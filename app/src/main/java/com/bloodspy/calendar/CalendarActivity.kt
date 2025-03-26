@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.bloodspy.calendar.navigation.CalendarNavGraph
-import com.bloodspy.calendar.presentation.events.CalendarScreen
 import com.bloodspy.calendar.theme.CalendarTheme
 import dagger.hilt.android.AndroidEntryPoint
 

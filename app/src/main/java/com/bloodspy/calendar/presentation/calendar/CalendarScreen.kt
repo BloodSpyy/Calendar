@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.presentation.events
+package com.bloodspy.calendar.presentation.calendar
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
@@ -228,11 +228,11 @@ private fun MonthsCarousel(
         val monthIndex = monthsCarousel.indexOf(monthWithYear)
 
         if (!isClickedMonthFullyVisible(lazyListState, monthIndex)) {
-            with(lazyListState) {
-                val itemScrollOffset = if (monthIndex >= layoutInfo.visibleItemsInfo.last().index) {
-                    layoutInfo.visibleItemsInfo.last().size
+            with(lazyListState.layoutInfo) {
+                val itemScrollOffset = if (monthIndex >= visibleItemsInfo.last().index) {
+                    viewportEndOffset - (visibleItemsInfo.last().size + visibleItemsInfo.first().size)
                 } else {
-                    layoutInfo.visibleItemsInfo.first().size
+                    visibleItemsInfo.first().size
                 }
 
                 lazyListState.animateScrollToItem(monthIndex, -itemScrollOffset)
