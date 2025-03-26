@@ -263,8 +263,8 @@ private fun MonthsCarousel(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(percent = 15))
                     .background(background)
-                    .clip(RoundedCornerShape(percent = 20))
                     .border(width = 2.dp, color = borderColor)
                     .clickable { onMonthClick(monthToShow) }
                     .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
