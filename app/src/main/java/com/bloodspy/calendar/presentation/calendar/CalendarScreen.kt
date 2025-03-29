@@ -1,12 +1,17 @@
 package com.bloodspy.calendar.presentation.calendar
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -133,10 +138,16 @@ private fun CalendarContent(
             onMonthWithYearClick = onMonthWithYearClick
         )
 
-        if (isMonthCarouselVisible) MonthsCarousel(
-            monthWithYear = monthWithYear,
-            onMonthClick = onMonthClick
-        )
+        AnimatedVisibility(
+            isMonthCarouselVisible,
+            enter = slideInVertically() + scaleIn(),
+            exit = slideOutVertically() + scaleOut()
+        ) {
+            MonthsCarousel(
+                monthWithYear = monthWithYear,
+                onMonthClick = onMonthClick
+            )
+        }
 
         AnimatedContent(
             targetState = calendarsProduct,
