@@ -4,16 +4,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -65,6 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.domain.CalendarProduct
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
+import com.bloodspy.calendar.utils.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.utils.getMonthsCarousel
 import com.bloodspy.calendar.utils.isClickedMonthFullyVisible
 import java.time.LocalDate
@@ -80,12 +76,12 @@ fun CalendarScreen(
     onCalendarItemClick: (CalendarProduct) -> Unit,
 ) {
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             CalendarTopAppBar(
-                title = stringResource(R.string.app_name),
+                modifier = Modifier.fillMaxWidth(),
                 onMenuClick = onMenuClick,
                 onTasksClick = onTasksClick,
                 onHomeClick = viewModel::onHomeClick
@@ -99,7 +95,7 @@ fun CalendarScreen(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
-                    contentDescription = stringResource(R.string.calendar_screen_add_task_button)
+                    contentDescription = stringResource(R.string.calendar_screen_add_task_button_content_description)
                 )
             }
         }
@@ -107,7 +103,9 @@ fun CalendarScreen(
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         CalendarContent(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             calendarsProduct = uiState.calendarItems,
             isMonthCarouselVisible = uiState.isMonthsCarouselVisible,
             monthWithYear = uiState.monthWithYear,
@@ -132,8 +130,9 @@ private fun CalendarContent(
     onItemClick: (CalendarProduct) -> Unit,
     onMonthClick: (YearMonth) -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         CalendarHeader(
+            modifier = Modifier.fillMaxWidth(),
             monthWithYear = monthWithYear,
             onArrowBackClick = onArrowBackClick,
             onArrowForwardClick = onArrowForwardClick,
@@ -146,6 +145,7 @@ private fun CalendarContent(
             exit = scaleOut()
         ) {
             MonthsCarousel(
+                modifier = Modifier.fillMaxWidth(),
                 monthWithYear = monthWithYear,
                 onMonthClick = onMonthClick
             )
@@ -172,6 +172,7 @@ private fun CalendarContent(
             }
         ) { calendarsProduct ->
             CalendarGrid(
+                modifier = Modifier.fillMaxWidth(),
                 calendarsProduct = calendarsProduct,
                 onItemClick = onItemClick
             )
@@ -181,20 +182,22 @@ private fun CalendarContent(
 
 @Composable
 private fun CalendarHeader(
+    modifier: Modifier = Modifier,
     monthWithYear: YearMonth,
     onArrowBackClick: () -> Unit,
     onArrowForwardClick: () -> Unit,
     onMonthWithYearClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onArrowBackClick) {
             Icon(
+                modifier = Modifier.size(ICON_BUTTON_SIZE),
                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = stringResource(R.string.top_app_bar_go_to_previous_month),
+                contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_previous_month_content_description),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
@@ -209,16 +212,18 @@ private fun CalendarHeader(
             )
 
             Icon(
+                modifier = Modifier.size(ICON_BUTTON_SIZE),
                 imageVector = Icons.Outlined.ArrowDropDown,
-                contentDescription = stringResource(R.string.top_app_bar_choose_month),
+                contentDescription = stringResource(R.string.calendar_screen_top_app_bar_choose_month_content_description),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
 
         IconButton(onClick = onArrowForwardClick) {
             Icon(
+                modifier = Modifier.size(ICON_BUTTON_SIZE),
                 imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-                contentDescription = stringResource(R.string.top_app_bar_go_to_next_month),
+                contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_next_month_content_description),
                 tint = MaterialTheme.colorScheme.primary
             )
         }
@@ -254,7 +259,7 @@ private fun MonthsCarousel(
     }
 
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         state = lazyListState
     ) {
@@ -294,6 +299,7 @@ private fun MonthsCarousel(
 
 @Composable
 private fun CalendarGrid(
+    modifier: Modifier = Modifier,
     calendarsProduct: List<CalendarProduct>,
     onItemClick: (CalendarProduct) -> Unit,
 ) {
@@ -301,8 +307,7 @@ private fun CalendarGrid(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(DAYS_IN_WEEK),
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(top = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -319,6 +324,7 @@ private fun CalendarGrid(
             val isCurrentDate = calendarProduct.date == LocalDate.now()
 
             CalendarItem(
+                modifier = Modifier.fillMaxSize(),
                 calendarItem = calendarProduct,
                 isCurrentDate = isCurrentDate,
                 onItemClick = onItemClick
@@ -341,7 +347,6 @@ private fun CalendarItem(
     }
 
     val columnModifier = modifier
-        .fillMaxSize()
         .clip(CircleShape)
         .clickable { onItemClick(calendarItem) }
         .background(background)
@@ -360,13 +365,39 @@ private fun CalendarItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CalendarTopAppBar(
-    title: String,
+    modifier: Modifier = Modifier,
     onTasksClick: () -> Unit,
     onMenuClick: () -> Unit,
     onHomeClick: () -> Unit,
 ) {
     TopAppBar(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
+        title = { Text(text = stringResource(R.string.app_name)) },
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    modifier = Modifier.size(ICON_BUTTON_SIZE),
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_menu_content_description),
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onHomeClick) {
+                Icon(
+                    modifier = Modifier.size(ICON_BUTTON_SIZE),
+                    imageVector = Icons.Outlined.Home,
+                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_current_month_content_description)
+                )
+            }
+            IconButton(onClick = onTasksClick) {
+                Icon(
+                    modifier = Modifier.size(ICON_BUTTON_SIZE),
+                    painter = painterResource(R.drawable.tasks),
+                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_settings_content_description)
+                )
+            }
+        },
         colors = TopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             scrolledContainerColor = MaterialTheme.colorScheme.surface,
@@ -374,28 +405,5 @@ private fun CalendarTopAppBar(
             actionIconContentColor = MaterialTheme.colorScheme.onSurface,
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
-        navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Menu,
-                    contentDescription = stringResource(R.string.top_app_bar_open_menu),
-                )
-            }
-        },
-        title = { Text(text = title) },
-        actions = {
-            IconButton(onClick = onHomeClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Home,
-                    contentDescription = stringResource(R.string.top_app_bar_go_to_current_month)
-                )
-            }
-            IconButton(onClick = onTasksClick) {
-                Icon(
-                    painter = painterResource(R.drawable.tasks),
-                    contentDescription = stringResource(R.string.top_app_bar_open_settings)
-                )
-            }
-        }
     )
 }

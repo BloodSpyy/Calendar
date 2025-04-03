@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "events")
 data class EventLocal(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val title: String?,
+    val title: String,
     val description: String?,
     val startTime: Long,
     val endTime: Long?,

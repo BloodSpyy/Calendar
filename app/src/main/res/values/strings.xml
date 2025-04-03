@@ -4,20 +4,18 @@
     <string name="app_name">Календарь</string>
     <!-- anyone screen end -->
 
-    <!-- top app bar start -->
-    <string name="top_app_bar_go_to_previous_month">Перейти к предыдущему месяцу</string>
-    <string name="top_app_bar_go_to_next_month">Перейти к следующему месяцу</string>
-    <string name="top_app_bar_go_to_current_month">Перейти к текущему месяцу</string>
-    <string name="top_app_bar_open_settings">Открыть настройки</string>
-    <string name="top_app_bar_open_menu">Открыть меню</string>
-    <string name="top_app_bar_choose_month">Выбрать месяц</string>
-    <!-- top app bar end -->
-
     <!-- calendar screen start -->
+    <string name="calendar_screen_top_app_bar_go_to_previous_month_content_description">Перейти к предыдущему месяцу</string>
+    <string name="calendar_screen_top_app_bar_go_to_next_month_content_description">Перейти к следующему месяцу</string>
+    <string name="calendar_screen_top_app_bar_go_to_current_month_content_description">Перейти к текущему месяцу</string>
+    <string name="calendar_screen_top_app_bar_open_settings_content_description">Открыть настройки</string>
+    <string name="calendar_screen_top_app_bar_open_menu_content_description">Открыть меню</string>
+    <string name="calendar_screen_top_app_bar_choose_month_content_description">Выбрать месяц</string>
+
     <string name="calendar_screen_loading_events_error">
         Извините! У нас ошибка на нашей стороне. Попробуйте позже.
     </string>
-    <string name="calendar_screen_add_task_button">Добавить задачу</string>
+    <string name="calendar_screen_add_task_button_content_description">Добавить задачу</string>
 
     <string-array name="calendar_screen_days_of_week">
         <item name="monday">Пн</item>
@@ -59,4 +57,16 @@
         <item name="december">Декабрь %dг.</item>
     </string-array>
     <!-- calendar screen end -->
+
+    <!-- addEditTask screen start -->
+    <string name="add_edit_task_screen_top_app_bar_save_content_description">Сохранить</string>
+    <string name="add_edit_task_screen_top_app_bar_go_back_content_description">Вернуться назад</string>
+    <string name="add_edit_task_screen_schedule_content_description">Расписание</string>
+    <string name="add_edit_task_screen_repeatable_days_content_description">Повторение</string>
+
+    <string name="add_edit_task_screen_task_name_hint">Название</string>
+
+    <string name="add_edit_task_screen_all_day">Весь день</string>
+    <string name="add_edit_task_screen_not_repeatable">Не повторяется</string>
+    <!-- addEditTask screen end -->
 </resources>

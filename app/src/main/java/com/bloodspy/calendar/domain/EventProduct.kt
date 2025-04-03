@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 @Immutable
 data class EventProduct(
     val id: Int = 0,
-    val title: String?,
+    val title: String,
     val description: String?,
     val startTime: LocalDateTime,
     val endTime: LocalDateTime?,

@@ -4,20 +4,18 @@
     <string name="app_name">Calendar</string>
     <!-- anyone screen end -->
 
-    <!-- top app bar start -->
-    <string name="top_app_bar_open_settings">Open settings</string>
-    <string name="top_app_bar_open_menu">Open menu</string>
-    <string name="top_app_bar_go_to_previous_month">Go to previous month</string>
-    <string name="top_app_bar_go_to_next_month">Go to next month</string>
-    <string name="top_app_bar_go_to_current_month">Go to current month</string>
-    <string name="top_app_bar_choose_month">Choose month</string>
-    <!-- top app bar end -->
-
     <!-- calendar screen start -->
+    <string name="calendar_screen_top_app_bar_open_settings_content_description">Open settings</string>
+    <string name="calendar_screen_top_app_bar_open_menu_content_description">Open menu</string>
+    <string name="calendar_screen_top_app_bar_go_to_previous_month_content_description">Go to previous month</string>
+    <string name="calendar_screen_top_app_bar_go_to_next_month_content_description">Go to next month</string>
+    <string name="calendar_screen_top_app_bar_go_to_current_month_content_description">Go to current month</string>
+    <string name="calendar_screen_top_app_bar_choose_month_content_description">Choose month</string>
+    <string name="calendar_screen_add_task_button_content_description">Add task</string>
+
     <string name="calendar_screen_loading_events_error">
         Sorry! We have error on our side. Try later.
     </string>
-    <string name="calendar_screen_add_task_button">Add task</string>
 
     <string-array name="calendar_screen_days_of_week">
         <item name="monday">Mon</item>
@@ -59,4 +57,16 @@
         <item name="december">December %d</item>
     </string-array>
     <!-- calendar screen end -->
+
+    <!-- addEditTask screen start -->
+    <string name="add_edit_task_screen_top_app_bar_save_content_description">Save</string>
+    <string name="add_edit_task_screen_top_app_bar_go_back_content_description">Go back</string>
+    <string name="add_edit_task_screen_schedule_content_description">Schedule</string>
+    <string name="add_edit_task_screen_repeatable_days_content_description">Repeat</string>
+
+    <string name="add_edit_task_screen_task_name_hint">Name</string>
+
+    <string name="add_edit_task_screen_all_day">All day</string>
+    <string name="add_edit_task_screen_not_repeatable">Not repeatable</string>
+    <!-- addEditTask screen end -->
 </resources>
