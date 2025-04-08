@@ -7,6 +7,4 @@ import javax.inject.Inject
 class AddEditTaskViewModel @Inject constructor(
     private val calendarRepository: CalendarRepository
 ): ViewModel() {
-
 }
-
