@@ -233,7 +233,7 @@ fun AddEditTaskAppBar(
                 Icon(
                     modifier = Modifier.size(ICON_BUTTON_SIZE),
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_go_back_content_description)
+                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_go_back_content_description),
                 )
             }
         },
@@ -242,15 +242,15 @@ fun AddEditTaskAppBar(
                 Icon(
                     modifier = Modifier.size(ICON_BUTTON_SIZE),
                     imageVector = Icons.Outlined.Done,
-                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_save_content_description)
+                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_save_content_description),
                 )
             }
         },
         colors = TopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             scrolledContainerColor = MaterialTheme.colorScheme.surface,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+            actionIconContentColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
     )

@@ -387,22 +387,22 @@ private fun CalendarTopAppBar(
                 Icon(
                     modifier = Modifier.size(ICON_BUTTON_SIZE),
                     imageVector = Icons.Outlined.Home,
-                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_current_month_content_description)
+                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_current_month_content_description),
                 )
             }
             IconButton(onClick = onTasksClick) {
                 Icon(
                     modifier = Modifier.size(ICON_BUTTON_SIZE),
                     painter = painterResource(R.drawable.tasks),
-                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_settings_content_description)
+                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_settings_content_description),
                 )
             }
         },
         colors = TopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             scrolledContainerColor = MaterialTheme.colorScheme.surface,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+            actionIconContentColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
     )
