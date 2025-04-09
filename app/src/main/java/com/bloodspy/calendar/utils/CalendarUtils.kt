@@ -4,9 +4,9 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 import java.time.YearMonth
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 const val DAYS_IN_WEEK = 7
 const val DAYS_ON_SCREEN = 42
@@ -67,10 +67,16 @@ fun Int.getMonthsCarousel(yearsToShow: Int = 100): List<YearMonth> {
     return monthsCarousel
 }
 
-fun LocalDateTime.toTimestamp(): Long = this.atZone(ZoneId.systemDefault()).toEpochSecond()
-
-fun Long.toLocalDateTime(): LocalDateTime =
+fun Long.toLocalDateTimeFromSeconds(): LocalDateTime =
     Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
-fun LocalDate.toTimestamp(): Long =
-    this.atStartOfDay(ZoneId.systemDefault()).toInstant().epochSecond
+fun Long.toLocalDateFromMillis(): LocalDate =
+    Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
+
+//todo разберись с костылём в виде UTC, который влияет на установку даты в пикере даты, если стоит systemDefault() то день - 1, а если UTC то всё хорошо
+fun LocalDate.toTimestampInMillis(): Long =
+    this.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+
+fun LocalDateTime.toTimestampInSeconds(): Long = this.atZone(ZoneId.systemDefault()).toEpochSecond()
+
+

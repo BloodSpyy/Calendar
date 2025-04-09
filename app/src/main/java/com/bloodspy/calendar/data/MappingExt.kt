@@ -4,15 +4,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.bloodspy.calendar.data.local.event.EventLocal
 import com.bloodspy.calendar.domain.EventProduct
-import com.bloodspy.calendar.utils.toLocalDateTime
-import com.bloodspy.calendar.utils.toTimestamp
+import com.bloodspy.calendar.utils.toLocalDateTimeFromSeconds
+import com.bloodspy.calendar.utils.toTimestampInSeconds
 
 fun EventProduct.toLocal() = EventLocal(
     id = this.id,
     title = this.title,
     description = this.description,
-    startTime = this.startTime.toTimestamp(),
-    endTime = this.endTime?.toTimestamp(),
+    startTime = this.startTime.toTimestampInSeconds(),
+    endTime = this.endTime?.toTimestampInSeconds(),
     isAllDay = this.isAllDay,
     location = this.location,
     color = this.color.toArgb(),
@@ -25,8 +25,8 @@ fun EventLocal.toProduct() = EventProduct(
     id = this.id,
     title = this.title,
     description = this.description,
-    startTime = this.startTime.toLocalDateTime(),
-    endTime = this.endTime?.toLocalDateTime(),
+    startTime = this.startTime.toLocalDateTimeFromSeconds(),
+    endTime = this.endTime?.toLocalDateTimeFromSeconds(),
     isAllDay = this.isAllDay,
     location = this.location,
     color = Color(this.color),

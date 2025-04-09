@@ -2,6 +2,8 @@
 <resources>
     <!-- anyone screen start -->
     <string name="app_name">Календарь</string>
+    <string name="anyone_screen_picker_ok">ОК</string>
+    <string name="anyone_screen_picker_cancel">Отмена</string>
     <!-- anyone screen end -->
 
     <!-- calendar screen start -->
@@ -68,5 +70,6 @@
 
     <string name="add_edit_task_screen_all_day">Весь день</string>
     <string name="add_edit_task_screen_not_repeatable">Не повторяется</string>
+    <string name="add_edit_task_screen_date_format_pattern">E, d LLL uг.</string>
     <!-- addEditTask screen end -->
 </resources>

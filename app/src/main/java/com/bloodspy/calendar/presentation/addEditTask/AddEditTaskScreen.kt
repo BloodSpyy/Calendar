@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -30,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.utils.ICON_BUTTON_SIZE
+import com.bloodspy.calendar.utils.toLocalDateFromMillis
+import com.bloodspy.calendar.utils.toTimestampInMillis
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun AddEditTaskScreen(
@@ -94,7 +101,6 @@ fun AddEditTaskContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventTimePicker(
     modifier: Modifier = Modifier,
@@ -133,32 +139,23 @@ fun EventTimePicker(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(itemSpacing)
         ) {
+            var pickedStartDate by rememberSaveable { mutableStateOf(LocalDate.now()) }
+            var pickedEndDate by rememberSaveable { mutableStateOf(LocalDate.now()) }
+
             Text(
                 text = stringResource(R.string.add_edit_task_screen_all_day)
             )
 
-            val state = rememberDatePickerState()
-            var a by remember { mutableStateOf(false) }
-
-            if (a) {
-                DatePickerDialog(
-                    onDismissRequest = { a = false },
-                    confirmButton = {},
-                    dismissButton = {}
-                ) {
-                    DatePicker(state)
-                }
-            }
-
-            Text(
-                modifier = Modifier.clickable {
-                    a = true
-                },
-                text = "Пн, 31мар. 2025г"
+            DatePickerField(
+                modifier = Modifier.fillMaxWidth(),
+                selectedDate = pickedStartDate,
+                onDateSelected = { pickedStartDate = it },
             )
 
-            Text(
-                text = "Пн, 31мар. 2025г"
+            DatePickerField(
+                modifier = Modifier.fillMaxWidth(),
+                selectedDate = pickedEndDate,
+                onDateSelected = { pickedEndDate = it },
             )
 
             Text(
@@ -188,6 +185,7 @@ fun EventTimePicker(
         }
     }
 }
+
 
 @Composable
 fun NameInput(
@@ -242,4 +240,70 @@ fun AddEditTaskAppBar(
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
     )
+}
+
+@Composable
+fun DatePickerField(
+    modifier: Modifier = Modifier,
+    selectedDate: LocalDate = LocalDate.now(),
+    onDateSelected: (LocalDate) -> Unit,
+) {
+    var isDatePickerVisible by rememberSaveable { mutableStateOf(false) }
+
+    val dateFormatPattern = stringResource(R.string.add_edit_task_screen_date_format_pattern)
+    val formattedDate = DateTimeFormatter.ofPattern(dateFormatPattern).format(selectedDate)
+
+    Text(
+        modifier = modifier.clickable { isDatePickerVisible = true },
+        text = formattedDate
+    )
+
+    if (isDatePickerVisible) {
+        CalendarDatePicker(
+            initialDate = selectedDate,
+            onDateSelected = {
+                onDateSelected(it)
+                isDatePickerVisible = false
+            },
+            onDismissRequest = { isDatePickerVisible = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalendarDatePicker(
+    modifier: Modifier = Modifier,
+    initialDate: LocalDate = LocalDate.now(),
+    onDateSelected: (LocalDate) -> Unit,
+    onDismissRequest: () -> Unit
+
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialDate.toTimestampInMillis()
+    )
+
+    DatePickerDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            Button(
+                onClick = {
+                    val selectedDate =
+                        datePickerState.selectedDateMillis?.toLocalDateFromMillis() ?: initialDate
+                    onDateSelected(selectedDate)
+                    onDismissRequest()
+                }
+            ) {
+                Text(text = stringResource(R.string.anyone_screen_picker_ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismissRequest) {
+                Text(text = stringResource(R.string.anyone_screen_picker_cancel))
+            }
+        }
+    ) {
+        DatePicker(datePickerState)
+    }
 }
