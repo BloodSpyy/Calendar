@@ -70,6 +70,9 @@
 
     <string name="add_edit_task_screen_all_day">All day</string>
     <string name="add_edit_task_screen_not_repeatable">Not repeatable</string>
+    <string name="add_edit_task_screen_choose_time_dialog_title">Choose time</string>
+
     <string name="add_edit_task_screen_date_format_pattern">E, d LLL uг.</string>
+    <string name="add_edit_task_screen_time_format_pattern">HH:mm</string>
     <!-- addEditTask screen end -->
 </resources>

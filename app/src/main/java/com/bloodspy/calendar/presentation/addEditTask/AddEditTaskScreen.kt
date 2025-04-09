@@ -1,5 +1,6 @@
 package com.bloodspy.calendar.presentation.addEditTask
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,9 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,14 +40,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.utils.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.utils.toLocalDateFromMillis
 import com.bloodspy.calendar.utils.toTimestampInMillis
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -166,25 +176,30 @@ fun EventTimePicker(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(itemSpacing)
         ) {
+            var pickedStartTime by rememberSaveable { mutableStateOf(LocalTime.now()) }
+            var pickedEndTime by rememberSaveable { mutableStateOf(LocalTime.now()) }
+            var isAllDay by remember { mutableStateOf(false) }
+
             Checkbox(
                 modifier = Modifier.size(ICON_BUTTON_SIZE),
-                checked = false,
-                onCheckedChange = {}
+                checked = isAllDay,
+                onCheckedChange = { isAllDay = !isAllDay }
             )
 
-            Text(
-                text = "11:00"
-            )
+            TimePickerField(
+                selectedTime = pickedStartTime,
+                isAllDay = isAllDay
+            ) { pickedStartTime = it }
 
-            Text(
-                text = "12:00"
-            )
+            TimePickerField(
+                selectedTime = pickedEndTime,
+                isAllDay = isAllDay
+            ) { pickedEndTime = it }
 
             Spacer(modifier = Modifier.size(ICON_BUTTON_SIZE))
         }
     }
 }
-
 
 @Composable
 fun NameInput(
@@ -269,6 +284,107 @@ fun DatePickerField(
     }
 }
 
+@Composable
+fun TimePickerField(
+    modifier: Modifier = Modifier,
+    selectedTime: LocalTime = LocalTime.now(),
+    isAllDay: Boolean,
+    onTimeSelected: (LocalTime) -> Unit
+) {
+    var isTimePickerVisible by rememberSaveable { mutableStateOf(false) }
+
+    // if isAllDay -> hide time pickers and if !isAllDay -> show time pickers
+    val alphaForTimePickers = if (isAllDay) 0f else 1f
+
+    val timeFormatPattern = stringResource(R.string.add_edit_task_screen_time_format_pattern)
+
+    Text(
+        modifier = modifier
+            .alpha(alphaForTimePickers)
+            .clickable(enabled = !isAllDay) { isTimePickerVisible = true },
+        text = selectedTime.format(DateTimeFormatter.ofPattern(timeFormatPattern))
+    )
+
+    if (isTimePickerVisible) {
+        CalendarTimePicker(
+            initialTime = selectedTime,
+            onTimeSelected = {
+                onTimeSelected(it)
+                isTimePickerVisible = false
+            },
+            onDismissRequest = { isTimePickerVisible = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalendarTimePicker(
+    initialTime: LocalTime = LocalTime.now(),
+    onTimeSelected: (LocalTime) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    val state = rememberTimePickerState(
+        initialHour = initialTime.hour, initialMinute = initialTime.minute, is24Hour = true
+    )
+
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = true)
+    ) {
+        ElevatedCard(
+            modifier = Modifier.background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = MaterialTheme.shapes.extraLarge
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    text = stringResource(R.string.add_edit_task_screen_choose_time_dialog_title)
+                )
+
+                TimePicker(
+                    state = state,
+                    layoutType = TimePickerLayoutType.Vertical
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = onDismissRequest
+                    ) {
+                        Text(text = stringResource(R.string.anyone_screen_picker_cancel))
+                    }
+
+                    Button(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = {
+                            onTimeSelected(
+                                LocalTime.of(state.hour, state.minute)
+                            )
+                            onDismissRequest()
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.anyone_screen_picker_ok))
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarDatePicker(
@@ -276,9 +392,8 @@ fun CalendarDatePicker(
     initialDate: LocalDate = LocalDate.now(),
     onDateSelected: (LocalDate) -> Unit,
     onDismissRequest: () -> Unit
-
 ) {
-    val datePickerState = rememberDatePickerState(
+    val state = rememberDatePickerState(
         initialSelectedDateMillis = initialDate.toTimestampInMillis()
     )
 
@@ -289,7 +404,7 @@ fun CalendarDatePicker(
             Button(
                 onClick = {
                     val selectedDate =
-                        datePickerState.selectedDateMillis?.toLocalDateFromMillis() ?: initialDate
+                        state.selectedDateMillis?.toLocalDateFromMillis() ?: initialDate
                     onDateSelected(selectedDate)
                     onDismissRequest()
                 }
@@ -303,6 +418,6 @@ fun CalendarDatePicker(
             }
         }
     ) {
-        DatePicker(datePickerState)
+        DatePicker(state)
     }
 }
