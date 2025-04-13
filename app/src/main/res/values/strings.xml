@@ -65,14 +65,29 @@
     <string name="add_edit_task_screen_top_app_bar_go_back_content_description">Вернуться назад</string>
     <string name="add_edit_task_screen_schedule_content_description">Расписание</string>
     <string name="add_edit_task_screen_repeatable_days_content_description">Повторение</string>
+    <string name="add_edit_task_screen_location_content_description">Местоположение</string>
+    <string name="add_edit_task_screen_name_content_description">Название</string>
+    <string name="add_edit_task_screen_description_content_description">Описание</string>
 
     <string name="add_edit_task_screen_task_name_hint">Название</string>
+    <string name="add_edit_task_screen_task_location_hint">Местоположение</string>
+    <string name="add_edit_task_screen_description_hint">Описание</string>
 
     <string name="add_edit_task_screen_all_day">Весь день</string>
     <string name="add_edit_task_screen_not_repeatable">Не повторяется</string>
     <string name="add_edit_task_screen_choose_time_dialog_title">Выберите время</string>
+    <string name="add_edit_task_screen_choose_color_dialog_title">Выберите цвет</string>
+
+    <string name="add_edit_task_screen_default_color">Цвет по умолчанию</string>
 
     <string name="add_edit_task_screen_date_format_pattern">E, d LLL uг.</string>
     <string name="add_edit_task_screen_time_format_pattern">HH:mm</string>
+
+    <string-array name="add_edit_task_colors">
+        <item name="purple">Фиолетовый</item>
+        <item name="yellow">Желтый</item>
+        <item name="red">Красный</item>
+        <item name="default">Цвет по умолчанию</item>
+    </string-array>
     <!-- addEditTask screen end -->
 </resources>

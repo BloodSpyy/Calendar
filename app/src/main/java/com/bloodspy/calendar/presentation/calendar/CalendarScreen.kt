@@ -58,11 +58,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
+import com.bloodspy.calendar.constants.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.domain.CalendarProduct
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
-import com.bloodspy.calendar.utils.ICON_BUTTON_SIZE
+import com.bloodspy.calendar.utils.compose.isClickedMonthFullyVisible
 import com.bloodspy.calendar.utils.getMonthsCarousel
-import com.bloodspy.calendar.utils.isClickedMonthFullyVisible
 import java.time.LocalDate
 import java.time.YearMonth
 

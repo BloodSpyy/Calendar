@@ -2,6 +2,11 @@ package com.bloodspy.calendar.theme
 
 import androidx.compose.ui.graphics.Color
 
+val lightPurple = Color(0xFFDAB1DA)
+val lightYellow = Color(0xFFFFFFC5)
+val lightRed = Color(0xFFFF474C)
+val lightBlue = Color(0xFF90D5FF)
+
 val primaryLight = Color(0xFF33618D)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFD0E4FF)

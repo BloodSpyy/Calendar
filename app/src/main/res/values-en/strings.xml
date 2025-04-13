@@ -65,14 +65,29 @@
     <string name="add_edit_task_screen_top_app_bar_go_back_content_description">Go back</string>
     <string name="add_edit_task_screen_schedule_content_description">Schedule</string>
     <string name="add_edit_task_screen_repeatable_days_content_description">Repeat</string>
+    <string name="add_edit_task_screen_location_content_description">Location</string>
+    <string name="add_edit_task_screen_name_content_description">Name</string>
+    <string name="add_edit_task_screen_description_content_description">Description</string>
 
     <string name="add_edit_task_screen_task_name_hint">Name</string>
+    <string name="add_edit_task_screen_task_location_hint">Location</string>
+    <string name="add_edit_task_screen_description_hint">Description</string>
 
     <string name="add_edit_task_screen_all_day">All day</string>
     <string name="add_edit_task_screen_not_repeatable">Not repeatable</string>
     <string name="add_edit_task_screen_choose_time_dialog_title">Choose time</string>
+    <string name="add_edit_task_screen_choose_color_dialog_title">Choose color</string>
+
+    <string name="add_edit_task_screen_default_color">Default color</string>
 
     <string name="add_edit_task_screen_date_format_pattern">E, d LLL uг.</string>
     <string name="add_edit_task_screen_time_format_pattern">HH:mm</string>
+
+    <string-array name="add_edit_task_colors">
+        <item name="purple">Purple</item>
+        <item name="yellow">Yellow</item>
+        <item name="red">Red</item>
+        <item name="default">Default color</item>
+    </string-array>
     <!-- addEditTask screen end -->
 </resources>

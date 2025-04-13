@@ -1,9 +1,6 @@
-package com.bloodspy.calendar.utils
+package com.bloodspy.calendar.utils.compose
 
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.ui.unit.dp
-
-val ICON_BUTTON_SIZE = 24.dp
 
 fun isClickedMonthFullyVisible(lazyListState: LazyListState, clickedMonthIndex: Int): Boolean {
     with(lazyListState.layoutInfo) {
