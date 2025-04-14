@@ -84,6 +84,9 @@
     <string name="add_edit_task_screen_time_format_pattern">HH:mm</string>
 
     <string-array name="add_edit_task_colors">
+        <item name="green">Green</item>
+        <item name="orange">Orange</item>
+        <item name="pink">Pink</item>
         <item name="purple">Purple</item>
         <item name="yellow">Yellow</item>
         <item name="red">Red</item>

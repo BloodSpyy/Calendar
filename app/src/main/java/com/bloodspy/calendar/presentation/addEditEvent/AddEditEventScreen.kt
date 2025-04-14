@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.presentation.addEditTask
+package com.bloodspy.calendar.presentation.addEditEvent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,9 +29,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.constants.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.constants.SPACE_BETWEEN_ICON_AND_FIELD
@@ -40,11 +43,13 @@ import com.bloodspy.calendar.utils.compose.ColorSelectionField
 import com.bloodspy.calendar.utils.compose.DatePickerField
 import com.bloodspy.calendar.utils.compose.TimePickerField
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Composable
-fun AddEditTaskScreen(
+fun AddEditEventScreen(
     modifier: Modifier = Modifier,
+    viewModel: AddEditEventViewModel = hiltViewModel(),
     onArrowBackClick: () -> Unit,
     onSaveButtonClick: () -> Unit,
 ) {
@@ -60,23 +65,53 @@ fun AddEditTaskScreen(
             )
         },
     ) { paddingValues ->
-        AddEditTaskContent(
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+        AddEditEventContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            name = "",
-            location = "",
-            description = ""
+            title = uiState.title,
+            location = uiState.location,
+            description = uiState.description,
+            startTime = uiState.startTime,
+            endTime = uiState.endTime,
+            isAllDay = uiState.isAllDay,
+            color = uiState.color,
+            recurrenceRule = uiState.recurrenceRule,
+            onTitleChanged = viewModel::onTitleChanged,
+            onStartTimeChanged = viewModel::onStartTimeChanged,
+            onEndTimeChanged = viewModel::onEndTimeChanged,
+            onStartDateChanged = viewModel::onStartDateChanged,
+            onEndDateChanged = viewModel::onEndDateChanged,
+            onAllDayClick = viewModel::onAllDayClick,
+            onLocationChanged = viewModel::onLocationChanged,
+            onDescriptionChanged = viewModel::onDescriptionChanged,
+            onColorChanged = viewModel::onColorChanged,
         )
     }
 }
 
 @Composable
-fun AddEditTaskContent(
+fun AddEditEventContent(
     modifier: Modifier = Modifier,
-    name: String,
+    title: String,
     location: String,
-    description: String
+    description: String,
+    startTime: LocalDateTime,
+    endTime: LocalDateTime,
+    isAllDay: Boolean,
+    color: Color,
+    recurrenceRule: String,
+    onTitleChanged: (String) -> Unit,
+    onStartTimeChanged: (LocalTime) -> Unit,
+    onEndTimeChanged: (LocalTime) -> Unit,
+    onStartDateChanged: (LocalDate) -> Unit,
+    onEndDateChanged: (LocalDate) -> Unit,
+    onAllDayClick: (Boolean) -> Unit,
+    onLocationChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
+    onColorChanged: (Color) -> Unit
 ) {
     val screenPadding = 12.dp
     val dividerThickness = 1.dp
@@ -89,20 +124,27 @@ fun AddEditTaskContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = screenPadding, end = screenPadding),
-            value = name,
+            value = title,
             icon = R.drawable.edit_square,
             contentDescription = R.string.add_edit_task_screen_name_content_description,
-            hint = R.string.add_edit_task_screen_task_name_hint
-        ) {
-
-        }
+            hint = R.string.add_edit_task_screen_task_name_hint,
+            onValueChanged = onTitleChanged
+        )
 
         HorizontalDivider(thickness = dividerThickness)
 
         EventTimePicker(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(screenPadding)
+                .padding(screenPadding),
+            startTime = startTime,
+            endTime = endTime,
+            isAllDay = isAllDay,
+            onStartTimeChanged = onStartTimeChanged,
+            onEndTimeChanged = onEndTimeChanged,
+            onStartDateChanged = onStartDateChanged,
+            onEndDateChanged = onEndDateChanged,
+            onAllDayClick = onAllDayClick
         )
 
         HorizontalDivider(thickness = dividerThickness)
@@ -114,10 +156,9 @@ fun AddEditTaskContent(
             value = location,
             icon = R.drawable.location_city,
             contentDescription = R.string.add_edit_task_screen_location_content_description,
-            hint = R.string.add_edit_task_screen_task_location_hint
-        ) {
-
-        }
+            hint = R.string.add_edit_task_screen_task_location_hint,
+            onValueChanged = onLocationChanged
+        )
 
         HorizontalDivider(thickness = dividerThickness)
 
@@ -128,26 +169,33 @@ fun AddEditTaskContent(
             value = description,
             icon = R.drawable.description,
             contentDescription = R.string.add_edit_task_screen_description_content_description,
-            hint = R.string.add_edit_task_screen_description_hint
-        ) {
-
-        }
+            hint = R.string.add_edit_task_screen_description_hint,
+            onValueChanged = onDescriptionChanged
+        )
 
         HorizontalDivider(thickness = dividerThickness)
 
         ColorSelectionField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(screenPadding)
-        ) {
-
-        }
+                .padding(screenPadding),
+            color = color,
+            onColorSelected = onColorChanged
+        )
     }
 }
 
 @Composable
 fun EventTimePicker(
     modifier: Modifier = Modifier,
+    startTime: LocalDateTime,
+    endTime: LocalDateTime,
+    isAllDay: Boolean,
+    onStartTimeChanged: (LocalTime) -> Unit,
+    onEndTimeChanged: (LocalTime) -> Unit,
+    onStartDateChanged: (LocalDate) -> Unit,
+    onEndDateChanged: (LocalDate) -> Unit,
+    onAllDayClick: (Boolean) -> Unit
 ) {
     val itemSpacing = 24.dp
 
@@ -181,8 +229,8 @@ fun EventTimePicker(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(itemSpacing)
         ) {
-            var pickedStartDate by rememberSaveable { mutableStateOf(LocalDate.now()) }
-            var pickedEndDate by rememberSaveable { mutableStateOf(LocalDate.now()) }
+            val pickedStartDate = startTime.toLocalDate()
+            val pickedEndDate = endTime.toLocalDate()
 
             Text(
                 text = stringResource(R.string.add_edit_task_screen_all_day)
@@ -191,13 +239,13 @@ fun EventTimePicker(
             DatePickerField(
                 modifier = Modifier.fillMaxWidth(),
                 selectedDate = pickedStartDate,
-                onDateSelected = { pickedStartDate = it },
+                onDateSelected = onStartDateChanged,
             )
 
             DatePickerField(
                 modifier = Modifier.fillMaxWidth(),
                 selectedDate = pickedEndDate,
-                onDateSelected = { pickedEndDate = it },
+                onDateSelected = onEndDateChanged,
             )
 
             Text(
@@ -209,25 +257,26 @@ fun EventTimePicker(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(itemSpacing)
         ) {
-            var pickedStartTime by rememberSaveable { mutableStateOf(LocalTime.now()) }
-            var pickedEndTime by rememberSaveable { mutableStateOf(LocalTime.now()) }
-            var isAllDay by remember { mutableStateOf(false) }
+            val pickedStartTime = startTime.toLocalTime()
+            val pickedEndTime = endTime.toLocalTime()
 
             Checkbox(
                 modifier = Modifier.size(ICON_BUTTON_SIZE),
                 checked = isAllDay,
-                onCheckedChange = { isAllDay = !isAllDay }
+                onCheckedChange = onAllDayClick
             )
 
             TimePickerField(
                 selectedTime = pickedStartTime,
-                isAllDay = isAllDay
-            ) { pickedStartTime = it }
+                isAllDay = isAllDay,
+                onTimeSelected = onStartTimeChanged
+            )
 
             TimePickerField(
                 selectedTime = pickedEndTime,
-                isAllDay = isAllDay
-            ) { pickedEndTime = it }
+                isAllDay = isAllDay,
+                onTimeSelected = onEndTimeChanged
+            )
 
             Spacer(modifier = Modifier.size(ICON_BUTTON_SIZE))
         }

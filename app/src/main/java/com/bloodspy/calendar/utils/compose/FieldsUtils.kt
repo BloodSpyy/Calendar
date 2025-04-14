@@ -18,7 +18,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,10 +31,13 @@ import androidx.compose.ui.res.stringResource
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.constants.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.constants.SPACE_BETWEEN_ICON_AND_FIELD
-import com.bloodspy.calendar.theme.lightBlue
-import com.bloodspy.calendar.theme.lightPurple
+import com.bloodspy.calendar.theme.defaultEventColor
+import com.bloodspy.calendar.theme.lightGreen
 import com.bloodspy.calendar.theme.lightRed
-import com.bloodspy.calendar.theme.lightYellow
+import com.bloodspy.calendar.theme.orange
+import com.bloodspy.calendar.theme.pink
+import com.bloodspy.calendar.theme.purple
+import com.bloodspy.calendar.theme.yellow
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -43,11 +45,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ColorSelectionField(
     modifier: Modifier = Modifier,
-    color: Color = lightBlue,
-    @StringRes text: Int = R.string.add_edit_task_screen_default_color,
-    onColorSelected: (String) -> Unit
+    color: Color = defaultEventColor,
+    onColorSelected: (Color) -> Unit
 ) {
-    var isColorSelectionVisible by remember { mutableStateOf(false) }
+    var isColorSelectionVisible by rememberSaveable { mutableStateOf(false) }
+
+    val colorNames = stringArrayResource(R.array.add_edit_task_colors).toList()
+    // Ensure the color values are in the same order as the resource array
+    val colors = listOf(lightGreen, orange, pink, purple, yellow, lightRed, defaultEventColor)
 
     Row(
         modifier = modifier.clickable { isColorSelectionVisible = true },
@@ -62,16 +67,11 @@ fun ColorSelectionField(
 
         Text(
             modifier = Modifier,
-            text = stringResource(text)
+            text = colorNames[colors.indexOf(color)]
         )
     }
 
     if (isColorSelectionVisible) {
-        val colorNames = stringArrayResource(R.array.add_edit_task_colors).toList()
-        // Ensure the color values are in the same order as the resource array
-        val colors = listOf(lightPurple, lightYellow, lightRed, lightBlue)
-        val colorsByName = remember(colorNames) { colorNames.zip(colors).toMap() }
-
         SingleSelectDialog(
             title = R.string.add_edit_task_screen_choose_color_dialog_title,
             optionsList = colorNames,
@@ -81,11 +81,11 @@ fun ColorSelectionField(
                     modifier = Modifier
                         .size(ICON_BUTTON_SIZE)
                         .clip(CircleShape)
-                        .background(color = colorsByName[it] ?: lightBlue),
+                        .background(color = colors[colorNames.indexOf(it)]),
                 )
             }
         ) {
-            onColorSelected(it)
+            onColorSelected(colors[colorNames.indexOf(it)])
             isColorSelectionVisible = false
         }
     }
@@ -175,6 +175,7 @@ fun AddEditInputField(
             modifier = Modifier.fillMaxWidth(),
             value = value,
             onValueChange = onValueChanged,
+            singleLine = true,
             placeholder = { Text(text = stringResource(hint)) },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.background,

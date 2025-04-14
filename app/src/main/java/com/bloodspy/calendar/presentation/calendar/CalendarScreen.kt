@@ -172,7 +172,9 @@ private fun CalendarContent(
             }
         ) { calendarsProduct ->
             CalendarGrid(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
                 calendarsProduct = calendarsProduct,
                 onItemClick = onItemClick
             )

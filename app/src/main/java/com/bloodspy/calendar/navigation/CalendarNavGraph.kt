@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.bloodspy.calendar.presentation.addEditTask.AddEditTaskScreen
+import com.bloodspy.calendar.presentation.addEditEvent.AddEditEventScreen
 import com.bloodspy.calendar.presentation.calendar.CalendarScreen
 
 @Composable
@@ -41,7 +41,7 @@ fun CalendarNavGraph(
         }
 
         composable(route = CalendarDestinations.ADD_TASK_ROUTE) {
-            AddEditTaskScreen(
+            AddEditEventScreen(
                 modifier = Modifier.fillMaxSize(),
                 onArrowBackClick = {},
                 onSaveButtonClick = {}
