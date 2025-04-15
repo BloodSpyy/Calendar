@@ -1,5 +1,12 @@
 package com.bloodspy.calendar.presentation.addEditEvent
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -246,17 +253,21 @@ fun EventTimePicker(
                 text = stringResource(R.string.add_edit_task_screen_all_day)
             )
 
-            DatePickerField(
-                modifier = Modifier.fillMaxWidth(),
-                selectedDate = pickedStartDate,
-                onDateSelected = onStartDateChanged,
-            )
+            AnimatedDateTimeTransition(pickedStartDate) { startDate ->
+                DatePickerField(
+                    modifier = Modifier.fillMaxWidth(),
+                    selectedDate = startDate,
+                    onDateSelected = onStartDateChanged,
+                )
+            }
 
-            DatePickerField(
-                modifier = Modifier.fillMaxWidth(),
-                selectedDate = pickedEndDate,
-                onDateSelected = onEndDateChanged,
-            )
+            AnimatedDateTimeTransition(pickedEndDate) { endDate ->
+                DatePickerField(
+                    modifier = Modifier.fillMaxWidth(),
+                    selectedDate = endDate,
+                    onDateSelected = onEndDateChanged,
+                )
+            }
 
             Text(
                 text = stringResource(R.string.add_edit_task_screen_not_repeatable)
@@ -276,17 +287,22 @@ fun EventTimePicker(
                 onCheckedChange = onAllDayClick
             )
 
-            TimePickerField(
-                selectedTime = pickedStartTime,
-                isAllDay = isAllDay,
-                onTimeSelected = onStartTimeChanged
-            )
+            AnimatedDateTimeTransition(pickedStartTime) { startTime ->
+                TimePickerField(
+                    selectedTime = startTime,
+                    isAllDay = isAllDay,
+                    onTimeSelected = onStartTimeChanged
+                )
+            }
 
-            TimePickerField(
-                selectedTime = pickedEndTime,
-                isAllDay = isAllDay,
-                onTimeSelected = onEndTimeChanged
-            )
+
+            AnimatedDateTimeTransition(pickedEndTime) { endTime ->
+                TimePickerField(
+                    selectedTime = endTime,
+                    isAllDay = isAllDay,
+                    onTimeSelected = onEndTimeChanged
+                )
+            }
 
             Spacer(modifier = Modifier.size(ICON_BUTTON_SIZE))
         }
@@ -328,5 +344,25 @@ fun AddEditTaskAppBar(
             actionIconContentColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
+    )
+}
+
+@Composable
+fun <S : Comparable<S>> AnimatedDateTimeTransition(
+    targetState: S,
+    content: @Composable AnimatedContentScope.(S) -> Unit
+) {
+    AnimatedContent(
+        targetState = targetState,
+        content = content,
+        transitionSpec = {
+            if (targetState > initialState) {
+                slideInVertically { fullHeight -> fullHeight } togetherWith
+                        slideOutVertically { fullHeight -> -fullHeight }
+            } else {
+                slideInVertically { fullHeight -> -fullHeight } togetherWith
+                        slideOutVertically { fullHeight -> fullHeight }
+            }
+        }
     )
 }
