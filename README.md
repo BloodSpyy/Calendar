@@ -1,5 +1,8 @@
 # A simple calendar app
 
+Add your API key to gradle.properties in the following format:
+apiKey=YOUR_API_KEY
+
 ## In this app you can:
 
 1. Add, remove, or edit events.

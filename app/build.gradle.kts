@@ -1,9 +1,27 @@
+import com.android.build.api.variant.BuildConfigField
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+}
+
+androidComponents {
+    val apiKey = property("apiKey")?.toString()
+        ?: error("You should add api key into gradle.properties")
+
+    onVariants { variant ->
+        variant.buildConfigFields.put(
+            "LOCATION_API_KEY",
+            BuildConfigField(
+                "String",
+                "\"$apiKey\"",
+                "Api key for acessing to DaData.ru"
+            )
+        )
+    }
 }
 
 android {
@@ -39,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -69,6 +88,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }
 
 java {
