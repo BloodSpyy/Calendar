@@ -83,6 +83,10 @@
     <string name="add_edit_task_screen_date_format_pattern">E, d LLL uг.</string>
     <string name="add_edit_task_screen_time_format_pattern">HH:mm</string>
 
+    <string name="add_edit_task_screen_end_date_error_message">
+        Дата окончания не может быть раньше даты начала
+    </string>
+
     <string-array name="add_edit_task_colors">
         <item name="green">Зеленый</item>
         <item name="orange">Оранжевый</item>

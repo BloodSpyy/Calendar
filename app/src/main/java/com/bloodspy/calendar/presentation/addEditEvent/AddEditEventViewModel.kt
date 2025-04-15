@@ -1,7 +1,9 @@
 package com.bloodspy.calendar.presentation.addEditEvent
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import com.bloodspy.calendar.R
 import com.bloodspy.calendar.domain.CalendarRepository
 import com.bloodspy.calendar.theme.defaultEventColor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,8 @@ data class AddEditEventUiState(
     val isAllDay: Boolean = false,
     val location: String = "",
     val color: Color = defaultEventColor,
-    val recurrenceRule: String = ""
+    val recurrenceRule: String = "",
+    val userMessage: Int? = null
 )
 
 @HiltViewModel
@@ -41,19 +44,19 @@ class AddEditEventViewModel @Inject constructor(
     }
 
     fun onStartTimeChanged(time: LocalTime) {
-        _uiState.update { it.copy(startTime = it.startTime.with(time)) }
-    }
-
-    fun onEndTimeChanged(time: LocalTime) {
-        _uiState.update { it.copy(endTime = it.endTime.with(time)) }
+        updateStartTime { it.with(time) }
     }
 
     fun onStartDateChanged(date: LocalDate) {
-        _uiState.update { it.copy(startTime = it.startTime.with(date)) }
+        updateStartTime { it.with(date) }
+    }
+
+    fun onEndTimeChanged(time: LocalTime) {
+        validateAndUpdateEndTime { it.with(time) }
     }
 
     fun onEndDateChanged(date: LocalDate) {
-        _uiState.update { it.copy(endTime = it.endTime.with(date)) }
+        validateAndUpdateEndTime { it.with(date) }
     }
 
     fun onLocationChanged(location: String) {
@@ -66,5 +69,35 @@ class AddEditEventViewModel @Inject constructor(
 
     fun onColorChanged(color: Color) {
         _uiState.update { it.copy(color = color) }
+    }
+
+    fun onSnackbarMessageShown() {
+        _uiState.update { it.copy(userMessage = null) }
+    }
+
+    private fun updateStartTime(transform: (LocalDateTime) -> LocalDateTime) {
+        val fullStartTime = transform(_uiState.value.startTime)
+
+        _uiState.update {
+            if (fullStartTime <= it.endTime) {
+                it.copy(startTime = fullStartTime)
+            } else {
+                it.copy(startTime = fullStartTime, endTime = fullStartTime)
+            }
+        }
+    }
+
+    private fun validateAndUpdateEndTime(transform: (LocalDateTime) -> LocalDateTime) {
+        val fullEndTime = transform(_uiState.value.endTime)
+
+        if (fullEndTime < _uiState.value.startTime) {
+            showSnackbarMessage(R.string.add_edit_task_screen_end_date_error_message)
+        } else {
+            _uiState.update { it.copy(endTime = fullEndTime) }
+        }
+    }
+
+    private fun showSnackbarMessage(@StringRes message: Int) {
+        _uiState.update { it.copy(userMessage = message) }
     }
 }
