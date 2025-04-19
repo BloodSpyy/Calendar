@@ -97,4 +97,19 @@
         <item name="default">Default color</item>
     </string-array>
     <!-- addEditTask screen end -->
+
+    <!-- locationPicker screen start -->
+    <string name="location_picker_screen_top_app_bar_go_back_content_description">
+        Go back
+    </string>
+    <string name="location_picker_screen_location_content_description">
+        Location
+    </string>
+
+    <string name="location_picker_loading_locations_error">
+        No internet connection
+    </string>
+
+    <string name="location_picker_screen_task_location_hint">Location</string>
+    <!-- locationPicker screen start -->
 </resources>

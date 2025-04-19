@@ -87,6 +87,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation (libs.okhttp3.logging.interceptor)
+
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.retrofit)

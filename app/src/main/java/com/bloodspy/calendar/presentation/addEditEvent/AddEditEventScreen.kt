@@ -2,11 +2,10 @@ package com.bloodspy.calendar.presentation.addEditEvent
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,27 +14,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +42,7 @@ import com.bloodspy.calendar.R
 import com.bloodspy.calendar.constants.ICON_BUTTON_SIZE
 import com.bloodspy.calendar.constants.SPACE_BETWEEN_ICON_AND_FIELD
 import com.bloodspy.calendar.utils.compose.AddEditInputField
+import com.bloodspy.calendar.utils.compose.AddEditTaskTopAppBar
 import com.bloodspy.calendar.utils.compose.ColorSelectionField
 import com.bloodspy.calendar.utils.compose.DatePickerField
 import com.bloodspy.calendar.utils.compose.TimePickerField
@@ -60,13 +57,12 @@ fun AddEditEventScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onArrowBackClick: () -> Unit,
     onSaveButtonClick: () -> Unit,
+    onLocationClick: (String) -> Unit
 ) {
     Scaffold(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
-            AddEditTaskAppBar(
+            AddEditTaskTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 onArrowBackClick = onArrowBackClick,
                 onSaveButtonClick = onSaveButtonClick
@@ -94,7 +90,7 @@ fun AddEditEventScreen(
             onStartDateChanged = viewModel::onStartDateChanged,
             onEndDateChanged = viewModel::onEndDateChanged,
             onAllDayClick = viewModel::onAllDayClick,
-            onLocationChanged = viewModel::onLocationChanged,
+            onLocationClick = onLocationClick,
             onDescriptionChanged = viewModel::onDescriptionChanged,
             onColorChanged = viewModel::onColorChanged,
         )
@@ -126,21 +122,28 @@ fun AddEditEventContent(
     onStartDateChanged: (LocalDate) -> Unit,
     onEndDateChanged: (LocalDate) -> Unit,
     onAllDayClick: (Boolean) -> Unit,
-    onLocationChanged: (String) -> Unit,
+    onLocationClick: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onColorChanged: (Color) -> Unit
 ) {
     val screenPadding = 12.dp
     val dividerThickness = 1.dp
 
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Column(
         modifier = modifier.padding(top = screenPadding, bottom = screenPadding),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
+
         AddEditInputField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = screenPadding, end = screenPadding),
+                .padding(start = screenPadding, end = screenPadding)
+                .focusRequester(focusRequester),
             value = title,
             icon = R.drawable.edit_square,
             contentDescription = R.string.add_edit_task_screen_name_content_description,
@@ -166,15 +169,12 @@ fun AddEditEventContent(
 
         HorizontalDivider(thickness = dividerThickness)
 
-        AddEditInputField(
+        LocationPicker(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = screenPadding, end = screenPadding),
-            value = location,
-            icon = R.drawable.location_city,
-            contentDescription = R.string.add_edit_task_screen_location_content_description,
-            hint = R.string.add_edit_task_screen_task_location_hint,
-            onValueChanged = onLocationChanged
+                .padding(screenPadding),
+            location = location,
+            onLocationClick = onLocationClick
         )
 
         HorizontalDivider(thickness = dividerThickness)
@@ -198,6 +198,41 @@ fun AddEditEventContent(
                 .padding(screenPadding),
             color = color,
             onColorSelected = onColorChanged
+        )
+    }
+}
+
+@Composable
+fun LocationPicker(
+    modifier: Modifier = Modifier,
+    location: String,
+    onLocationClick: (String) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .clickable { onLocationClick(location) },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SPACE_BETWEEN_ICON_AND_FIELD)
+    ) {
+        val isHint = location.isEmpty()
+
+        val (textColor, text) = if (isHint) {
+            MaterialTheme.colorScheme.onSurfaceVariant to stringResource(R.string.add_edit_task_screen_task_location_hint)
+        } else {
+            MaterialTheme.colorScheme.onBackground to location
+        }
+
+        Icon(
+            modifier = Modifier.size(ICON_BUTTON_SIZE),
+            painter = painterResource(R.drawable.location_city),
+            contentDescription = stringResource(
+                R.string.add_edit_task_screen_location_content_description
+            )
+        )
+
+        Text(
+            text = text,
+            color = textColor
         )
     }
 }
@@ -295,7 +330,6 @@ fun EventTimePicker(
                 )
             }
 
-
             AnimatedDateTimeTransition(pickedEndTime) { endTime ->
                 TimePickerField(
                     selectedTime = endTime,
@@ -307,44 +341,6 @@ fun EventTimePicker(
             Spacer(modifier = Modifier.size(ICON_BUTTON_SIZE))
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddEditTaskAppBar(
-    modifier: Modifier = Modifier,
-    onArrowBackClick: () -> Unit,
-    onSaveButtonClick: () -> Unit,
-) {
-    TopAppBar(
-        modifier = modifier,
-        title = {},
-        navigationIcon = {
-            IconButton(onClick = onArrowBackClick) {
-                Icon(
-                    modifier = Modifier.size(ICON_BUTTON_SIZE),
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_go_back_content_description),
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onSaveButtonClick) {
-                Icon(
-                    modifier = Modifier.size(ICON_BUTTON_SIZE),
-                    imageVector = Icons.Outlined.Done,
-                    contentDescription = stringResource(R.string.add_edit_task_screen_top_app_bar_save_content_description),
-                )
-            }
-        },
-        colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            scrolledContainerColor = MaterialTheme.colorScheme.surface,
-            navigationIconContentColor = MaterialTheme.colorScheme.primary,
-            actionIconContentColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-        ),
-    )
 }
 
 @Composable

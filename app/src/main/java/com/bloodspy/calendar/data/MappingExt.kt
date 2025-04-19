@@ -3,11 +3,14 @@ package com.bloodspy.calendar.data
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.bloodspy.calendar.data.local.event.EventLocal
-import com.bloodspy.calendar.domain.EventProduct
+import com.bloodspy.calendar.data.network.response.AddressResponse
+import com.bloodspy.calendar.data.network.response.AddressesResponse
+import com.bloodspy.calendar.domain.product.AddressProduct
+import com.bloodspy.calendar.domain.product.EventProduct
 import com.bloodspy.calendar.utils.toLocalDateTimeFromSeconds
 import com.bloodspy.calendar.utils.toTimestampInSeconds
 
-fun EventProduct.toLocal() = EventLocal(
+fun EventProduct.toEventLocal(): EventLocal = EventLocal(
     id = this.id,
     title = this.title,
     description = this.description,
@@ -19,9 +22,9 @@ fun EventProduct.toLocal() = EventLocal(
     recurrenceRule = this.recurrenceRule,
 )
 
-fun List<EventProduct>.toLocal() = this.map { it.toLocal() }
+fun List<EventProduct>.toEventLocal(): List<EventLocal> = this.map { it.toEventLocal() }
 
-fun EventLocal.toProduct() = EventProduct(
+fun EventLocal.toEventProduct(): EventProduct = EventProduct(
     id = this.id,
     title = this.title,
     description = this.description,
@@ -33,4 +36,14 @@ fun EventLocal.toProduct() = EventProduct(
     recurrenceRule = this.recurrenceRule
 )
 
-fun List<EventLocal>.toProduct() = this.map { it.toProduct() }
+fun List<EventLocal>.toEventProduct(): List<EventProduct> = this.map { it.toEventProduct() }
+
+fun AddressesResponse.toAddressesProduct(): List<AddressProduct> = addresses.toAddressesProduct()
+
+fun List<AddressResponse>.toAddressesProduct(): List<AddressProduct> =
+    this.map { it.toAddressProduct() }
+
+fun AddressResponse.toAddressProduct(): AddressProduct = AddressProduct(
+    addressSuggestion = addressesSuggestion,
+    country = addressSuggestionDetail.country
+)

@@ -3,7 +3,7 @@ package com.bloodspy.calendar.presentation.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bloodspy.calendar.R
-import com.bloodspy.calendar.domain.CalendarProduct
+import com.bloodspy.calendar.domain.product.CalendarProduct
 import com.bloodspy.calendar.domain.CalendarRepository
 import com.bloodspy.calendar.utils.Async
 import com.bloodspy.calendar.utils.FIRST_DAY
@@ -58,6 +58,8 @@ class CalendarViewModel @Inject constructor(
         _daysWithEvents, _userMessage, _isMonthsCarouselVisible
     ) { daysWithEvents, userMessage, isMonthCarouselVisible ->
         when (daysWithEvents) {
+            Async.Loading -> TODO()
+
             is Async.Error -> CalendarUiState(userMessage = daysWithEvents.errorMessage)
             is Async.Success -> CalendarUiState(
                 calendarItems = daysWithEvents.data,
@@ -71,7 +73,7 @@ class CalendarViewModel @Inject constructor(
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Lazily,
+        started = SharingStarted.Eagerly,
         initialValue = CalendarUiState()
     )
 

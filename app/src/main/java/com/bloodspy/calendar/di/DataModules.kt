@@ -2,26 +2,17 @@ package com.bloodspy.calendar.di
 
 import android.content.Context
 import androidx.room.Room
-import com.bloodspy.calendar.data.DefaultCalendarRepository
 import com.bloodspy.calendar.data.local.CalendarDatabase
 import com.bloodspy.calendar.data.local.event.EventDao
 import com.bloodspy.calendar.data.local.relationship.RelationshipDao
-import com.bloodspy.calendar.domain.CalendarRepository
-import dagger.Binds
+import com.bloodspy.calendar.data.network.CalendarApiFactory
+import com.bloodspy.calendar.data.network.LocationApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-    @Singleton
-    @Binds
-    abstract fun bindCalendarRepository(repository: DefaultCalendarRepository): CalendarRepository
-}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,6 +26,10 @@ object DataModule {
             name = CalendarDatabase.DB_NAME
         ).build()
     }
+
+    @Singleton
+    @Provides
+    fun provideLocationApiService(): LocationApiService = CalendarApiFactory.locationApiService
 
     @Singleton
     @Provides

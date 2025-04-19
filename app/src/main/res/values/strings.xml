@@ -97,4 +97,19 @@
         <item name="default">Цвет по умолчанию</item>
     </string-array>
     <!-- addEditTask screen end -->
+
+    <!-- locationPicker screen start -->
+    <string name="location_picker_screen_top_app_bar_go_back_content_description">
+        Вернуться назад
+    </string>
+    <string name="location_picker_screen_location_content_description">
+        Местоположение
+    </string>
+
+    <string name="location_picker_loading_locations_error">
+        Отсутствует интернет соединение
+    </string>
+
+    <string name="location_picker_screen_task_location_hint">Местоположение</string>
+    <!-- locationPicker screen start -->
 </resources>

@@ -1,22 +1,39 @@
 package com.bloodspy.calendar.navigation
 
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.navigation.NavController
-import com.bloodspy.calendar.navigation.CalendarDestinations.ADD_TASK_ROUTE
-import com.bloodspy.calendar.navigation.CalendarScreens.ADD_TASK_SCREEN
-import com.bloodspy.calendar.navigation.CalendarScreens.CALENDAR_SCREEN
 
-object CalendarScreens {
-    const val CALENDAR_SCREEN = "calendar"
-    const val ADD_TASK_SCREEN = "addTask"
+sealed class Screen(val route: String) {
+    data object Calendar : Screen("calendar")
+
+    data object AddEditEvent : Screen("addEditEvent")
+
+    data object LocationPicker : Screen("location/{initialLocation}") {
+        const val ARG_INITIAL_LOCATION = "initialLocation"
+
+        fun createRoute(initialLocation: String): String =
+            "location/$initialLocation"
+    }
 }
 
-object CalendarDestinations {
-    const val CALENDAR_ROUTE = CALENDAR_SCREEN
-    const val ADD_TASK_ROUTE = ADD_TASK_SCREEN
-}
+class CalendarNavigationActions(
+    private val navController: NavController,
+    private val keyboardController: SoftwareKeyboardController?
+) {
+    fun navigateUp() {
+        keyboardController?.hide()
+        navController.popBackStack()
+    }
 
-class CalendarNavigationActions(private val navController: NavController) {
-    fun navigateToAddTask() {
-        navController.navigate(ADD_TASK_ROUTE)
+    fun navigateToAddEditEvent() {
+        navController.navigate(Screen.AddEditEvent.route) {
+            launchSingleTop = true
+        }
+    }
+
+    fun navigateToLocationPicker(initialLocation: String) {
+        navController.navigate(Screen.LocationPicker.createRoute(initialLocation)) {
+            launchSingleTop = true
+        }
     }
 }

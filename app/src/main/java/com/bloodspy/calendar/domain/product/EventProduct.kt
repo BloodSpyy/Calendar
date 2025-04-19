@@ -1,4 +1,4 @@
-package com.bloodspy.calendar.domain
+package com.bloodspy.calendar.domain.product
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color

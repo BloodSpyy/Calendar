@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -41,6 +42,7 @@ import com.bloodspy.calendar.theme.yellow
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 
 @Composable
 fun ColorSelectionField(
@@ -155,10 +157,10 @@ fun TimePickerField(
 @Composable
 fun AddEditInputField(
     modifier: Modifier = Modifier,
-    value: String,
     @DrawableRes icon: Int,
     @StringRes contentDescription: Int,
     @StringRes hint: Int,
+    value: String,
     onValueChanged: (String) -> Unit
 ) {
     Row(

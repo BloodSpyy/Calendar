@@ -32,17 +32,12 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,8 +53,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloodspy.calendar.R
 import com.bloodspy.calendar.constants.ICON_BUTTON_SIZE
-import com.bloodspy.calendar.domain.CalendarProduct
+import com.bloodspy.calendar.domain.product.CalendarProduct
 import com.bloodspy.calendar.utils.DAYS_IN_WEEK
+import com.bloodspy.calendar.utils.compose.CalendarTopAppBar
 import com.bloodspy.calendar.utils.compose.isClickedMonthFullyVisible
 import com.bloodspy.calendar.utils.getMonthsCarousel
 import java.time.LocalDate
@@ -362,50 +357,4 @@ private fun CalendarItem(
             text = calendarItem.date.dayOfMonth.toString()
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CalendarTopAppBar(
-    modifier: Modifier = Modifier,
-    onTasksClick: () -> Unit,
-    onMenuClick: () -> Unit,
-    onHomeClick: () -> Unit,
-) {
-    TopAppBar(
-        modifier = modifier,
-        title = { Text(text = stringResource(R.string.app_name)) },
-        navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    modifier = Modifier.size(ICON_BUTTON_SIZE),
-                    imageVector = Icons.Outlined.Menu,
-                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_menu_content_description),
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onHomeClick) {
-                Icon(
-                    modifier = Modifier.size(ICON_BUTTON_SIZE),
-                    imageVector = Icons.Outlined.Home,
-                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_go_to_current_month_content_description),
-                )
-            }
-            IconButton(onClick = onTasksClick) {
-                Icon(
-                    modifier = Modifier.size(ICON_BUTTON_SIZE),
-                    painter = painterResource(R.drawable.tasks),
-                    contentDescription = stringResource(R.string.calendar_screen_top_app_bar_open_settings_content_description),
-                )
-            }
-        },
-        colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            scrolledContainerColor = MaterialTheme.colorScheme.surface,
-            navigationIconContentColor = MaterialTheme.colorScheme.primary,
-            actionIconContentColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
-        ),
-    )
 }
